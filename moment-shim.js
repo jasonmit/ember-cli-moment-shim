@@ -1,5 +1,5 @@
 (function() {
-  /* globals define, moment */
+  /* globals define, moment, Ember */
 
   var ComparableMoment = Ember.Object.extend(Ember.Comparable, moment.fn, {
     compare: function(a, b) {
