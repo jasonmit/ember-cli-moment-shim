@@ -3,7 +3,7 @@
   "main": [
     "moment-shim.js"
   ],
-  "version": "0.0.3",
+  "version": "0.1.0",
   "homepage": "https://github.com/jasonmit/ember-cli-moment-shim",
   "authors": [
     "Jason Mitchell <jason.mitchell.w@gmail.com>"
