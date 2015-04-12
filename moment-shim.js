@@ -1,5 +1,5 @@
 (function() {
-/* globals define, moment */
+  /* globals define, moment */
 
   var ComparableMoment = Ember.Object.extend(Ember.Comparable, moment.fn, {
     compare: function(a, b) {
@@ -27,9 +27,12 @@
     }
   }
 
-  comparableMoment.utc = function() {
-    return ComparableMoment.create(moment.utc.apply(this, arguments));
-  };
+  // Wrap global moment methods that return a full moment object
+  ['utc', 'unix'].forEach(function(method) {
+    comparableMoment[method] = function() {
+      return ComparableMoment.create(moment[method].apply(this, arguments));
+    };
+  });
 
   ComparableMoment.reopen({
     clone: function() {
