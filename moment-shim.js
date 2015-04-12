@@ -28,7 +28,7 @@
   }
 
   // Wrap global moment methods that return a full moment object
-  ['utc', 'unix'].forEach(function(method) {
+  Ember.EnumerableUtils.forEach(['utc', 'unix'], function(method) {
     comparableMoment[method] = function() {
       return ComparableMoment.create(moment[method].apply(this, arguments));
     };
