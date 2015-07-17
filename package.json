@@ -2,19 +2,50 @@
   "name": "ember-cli-moment-shim",
   "version": "0.2.0",
   "description": "Expose 'moment' as an importable module",
-  "main": "index.js",
+  "scripts": {
+    "start": "ember server",
+    "build": "ember build",
+    "test": "ember try:testall"
+  },
+  "engines": {
+    "node": ">= 0.10.0"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/jasonmit/ember-cli-moment-shim.git"
   },
-  "keywords": [
-    "ember-addon",
-    "moment"
-  ],
   "author": "Jason Mitchell <jason.mitchell.w@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jasonmit/ember-cli-moment-shim/issues"
   },
-  "homepage": "https://github.com/jasonmit/ember-cli-moment-shim"
+  "homepage": "https://github.com/jasonmit/ember-cli-moment-shim",
+  "dependencies": {
+    "broccoli-funnel": "^0.2.3",
+    "broccoli-merge-trees": "^0.2.1",
+    "ember-cli-babel": "^5.0.0",
+    "moment": ">=2.10.3"
+  },
+  "devDependencies": {
+    "broccoli-asset-rev": "^2.0.2",
+    "ember-cli": "1.13.1",
+    "ember-cli-app-version": "0.3.5",
+    "ember-cli-content-security-policy": "0.4.0",
+    "ember-cli-dependency-checker": "^1.0.0",
+    "ember-cli-htmlbars": "0.7.9",
+    "ember-cli-inject-live-reload": "^1.3.0",
+    "ember-cli-qunit": "0.3.15",
+    "ember-cli-uglify": "^1.0.1",
+    "ember-disable-prototype-extensions": "^1.0.0",
+    "ember-disable-proxy-controllers": "^1.0.0",
+    "ember-export-application-global": "^1.0.2",
+    "ember-try": "0.0.6"
+  },
+  "keywords": [
+    "ember-addon",
+    "moment"
+  ],
+  "ember-addon": {
+    "configPath": "tests/dummy/config"
+  }
 }

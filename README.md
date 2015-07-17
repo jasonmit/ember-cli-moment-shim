@@ -1,23 +1,16 @@
-ember-cli-moment-shim
-===========
+# ember-cli-moment-shim
 
-About
------
+ES6 accessible module for momentjs within your Ember applications.
 
-ember-cli-moment-shim contains an ES6 module shim for momentjs.
+## Usage
 
-`bower install ember-cli-moment-shim`
-
-Usage
------
+* ember-cli < 0.2.3 `ember install:addon ember-cli-moment-shim`
+* ember-cli >= 0.2.3 `ember install ember-cli-moment-shim`
 
 ```js
 import moment from 'moment';
-
-// ...
 ```
 
-License
--------
+## License
 
-ember-cli-moment-shim shims is [MIT Licensed](https://github.com/stefanpenner/ember-cli-shims/blob/master/LICENSE.md).
+ember-cli-moment-shim shims is [MIT Licensed](https://github.com/jasonmit/ember-cli-moment-shim/blob/master/LICENSE.md).
