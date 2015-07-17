@@ -1,0 +1,20 @@
+{
+  "name": "ember-cli-moment-shim",
+  "version": "0.2.0",
+  "description": "Expose 'moment' as an importable module",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jasonmit/ember-cli-moment-shim.git"
+  },
+  "keywords": [
+    "ember-addon",
+    "moment"
+  ],
+  "author": "Jason Mitchell <jason.mitchell.w@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jasonmit/ember-cli-moment-shim/issues"
+  },
+  "homepage": "https://github.com/jasonmit/ember-cli-moment-shim"
+}

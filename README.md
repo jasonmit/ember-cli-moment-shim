@@ -8,6 +8,14 @@ ember-cli-moment-shim contains an ES6 module shim for momentjs.
 
 `bower install ember-cli-moment-shim`
 
+Usage
+-----
+
+```js
+import moment from 'moment';
+
+// ...
+```
 
 License
 -------
