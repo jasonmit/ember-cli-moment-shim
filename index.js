@@ -12,7 +12,13 @@ module.exports = {
   included: function(app) {
     this._super.included(app);
 
-    app.import(path.join(app.bowerDirectory + '/ember-cli-moment-shim/moment-shim.js'), {
+    var momentPath = path.join(
+      app.bowerDirectory,
+      'ember-cli-moment-shim',
+      'moment-shim.js'
+    );
+
+    app.import(momentPath, {
       exports: {
         moment: ['default'],
       }
