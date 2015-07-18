@@ -27,7 +27,7 @@ for (let momentProp in moment) {
 }
 
 // Wrap global moment methods that return a full moment object
-Ember.A(['utc', 'unix']).forEach((method) => {
+['utc', 'unix'].forEach((method) => {
   comparableMoment[method] = function() {
     return ComparableMoment.create(moment[method].apply(this, arguments));
   };
