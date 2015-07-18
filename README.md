@@ -1,5 +1,5 @@
 # ember-cli-moment-shim
-[![Build Status](https://travis-ci.org/jasonmit/ember-cli-moment-shim.svg?branch=cli-addon-patch)](https://travis-ci.org/jasonmit/ember-cli-moment-shim)
+[![Build Status](https://travis-ci.org/jasonmit/ember-cli-moment-shim.svg?branch=master)](https://travis-ci.org/jasonmit/ember-cli-moment-shim)
 
 ES6 accessible module for momentjs within your Ember applications.
 
