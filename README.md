@@ -11,7 +11,7 @@ ES6 accessible module for momentjs within your Ember applications.
 import moment from 'moment';
 ```
 
-## moment-timezone
+## Enabling moment-timezone
 
 ```js
 // config.environment.js
