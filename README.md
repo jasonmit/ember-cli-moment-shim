@@ -11,6 +11,22 @@ ES6 accessible module for momentjs within your Ember applications.
 import moment from 'moment';
 ```
 
+# Moment Timezone
+
+```js
+// config.environment.js
+module.exports = function(environment) {
+  var ENV = {
+    moment: {
+			// Options:
+			// 'all' - all years, all timezones
+			// '2010-2020' - 2010-2020, all timezones
+			// 'none' - no data, just timezone API
+      includeTimezone: 'all'
+    }
+  };
+```
+
 ## License
 
 ember-cli-moment-shim shims is [MIT Licensed](https://github.com/jasonmit/ember-cli-moment-shim/blob/master/LICENSE.md).

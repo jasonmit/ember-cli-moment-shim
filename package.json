@@ -1,7 +1,7 @@
 {
   "name": "ember-cli-moment-shim",
-  "version": "0.2.0",
-  "description": "Expose 'moment' as an importable module",
+  "version": "0.3.0",
+  "description": "Brings moment and moment-timezone into your Ember applications",
   "scripts": {
     "start": "ember server",
     "build": "ember build",
