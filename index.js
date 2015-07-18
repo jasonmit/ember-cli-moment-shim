@@ -14,9 +14,13 @@ module.exports = {
 
   included: function included(app) {
     this._super.included(app);
+    var options = this.projectConfig();
     var vendor = this.treePaths.vendor;
     app.import(path.join(vendor, 'moment', 'min', 'moment.min.js'));
-    app.import(path.join(vendor, 'moment-timezone', 'tz.js'));
+
+    if (options.moment && options.moment.includeTimezone) {
+      app.import(path.join(vendor, 'moment-timezone', 'tz.js'));
+    }
   },
 
   projectConfig: function projectConfig() {
