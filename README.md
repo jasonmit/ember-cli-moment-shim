@@ -18,10 +18,10 @@ import moment from 'moment';
 module.exports = function(environment) {
   var ENV = {
     moment: {
-			// Options:
-			// 'all' - all years, all timezones
-			// '2010-2020' - 2010-2020, all timezones
-			// 'none' - no data, just timezone API
+      // Options:
+      // 'all' - all years, all timezones
+      // '2010-2020' - 2010-2020, all timezones
+      // 'none' - no data, just timezone API
       includeTimezone: 'all'
     }
   };
