@@ -8,8 +8,14 @@ var rename = require('broccoli-stew').rename;
 module.exports = {
   name: 'moment',
 
-  included: function included(app) {
-    this._super.included(app);
+  included: function(app) {
+    this._super.included.apply(this, arguments);
+
+    // see: https://github.com/ember-cli/ember-cli/issues/3718
+    if (app.app) {
+      app = app.app;
+    }
+
     var options = this.projectConfig();
     var vendor = this.treePaths.vendor;
     app.import(path.join(vendor, 'moment', 'min', 'moment.min.js'));
@@ -19,11 +25,11 @@ module.exports = {
     }
   },
 
-  projectConfig: function projectConfig() {
+  projectConfig: function() {
     return this.project.config(process.env.EMBER_ENV) || {};
   },
 
-  treeForVendor: function treeForVendor(vendorTree) {
+  treeForVendor: function(vendorTree) {
     var trees = [];
     var app = this.app;
     var options = this.projectConfig();
