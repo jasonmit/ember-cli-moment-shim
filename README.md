@@ -25,6 +25,7 @@ module.exports = function(environment) {
       // 'none' - no data, just timezone API
       includeTimezone: 'all'
     }
+    return ENV;
   };
 ```
 
