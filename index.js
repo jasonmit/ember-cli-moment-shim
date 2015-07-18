@@ -5,6 +5,8 @@ var Funnel = require('broccoli-funnel');
 var mergeTrees = require('broccoli-merge-trees');
 var rename = require('broccoli-stew').rename;
 
+var momentPath = path.dirname(require.resolve('moment'));
+
 module.exports = {
   name: 'moment',
 
@@ -12,12 +14,21 @@ module.exports = {
     this._super.included.apply(this, arguments);
 
     // see: https://github.com/ember-cli/ember-cli/issues/3718
-    if (app.app) {
+    if (typeof app.import !== 'function' && app.app) {
       app = app.app;
     }
 
-    var options = this.projectConfig();
+    this.app = app;
+    this.importDependencies(app);
+  },
+
+  importDependencies: function(app) {
+    if (arguments.length < 1) {
+      throw new Error('Application instance must be passed to import');
+    }
+
     var vendor = this.treePaths.vendor;
+    var options = this.getConfig();
     app.import(path.join(vendor, 'moment', 'min', 'moment.min.js'));
 
     if (options.moment && options.moment.includeTimezone) {
@@ -25,15 +36,13 @@ module.exports = {
     }
   },
 
-  projectConfig: function() {
+  getConfig: function() {
     return this.project.config(process.env.EMBER_ENV) || {};
   },
 
   treeForVendor: function(vendorTree) {
     var trees = [];
-    var app = this.app;
-    var options = this.projectConfig();
-    var momentPath = path.dirname(require.resolve('moment'));
+    var options = this.getConfig();
 
     if (vendorTree) {
       trees.push(vendorTree);
