@@ -8,8 +8,8 @@ module.exports = {
   },
 
   afterInstall: function() {
-		// we need to install moment-timezone via bower since npmignore
-		// ignores `moment-timezone/builds/*`
+    // we need to install moment-timezone via bower since npmignore
+    // ignores `moment-timezone/builds/*`
     return this.addBowerPackageToProject('moment-timezone');
   }
 };

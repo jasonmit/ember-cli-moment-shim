@@ -8,10 +8,6 @@ var rename = require('broccoli-stew').rename;
 module.exports = {
   name: 'moment',
 
-  blueprintsPath: function blueprintsPath() {
-    return path.join(__dirname, 'blueprints');
-  },
-
   included: function included(app) {
     this._super.included(app);
     var options = this.projectConfig();
