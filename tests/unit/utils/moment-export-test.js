@@ -20,3 +20,7 @@ test('moment compare fn exists', (assert) => {
 test('moment tz fn exists', (assert) => {
   assert.equal(typeof moment.tz, 'function');
 });
+
+test('moment getLocale for `es`', (assert) => {
+  assert.equal(typeof moment.localeData('es'), 'object');
+});
