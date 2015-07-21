@@ -3,9 +3,25 @@
 var path = require('path');
 var Funnel = require('broccoli-funnel');
 var mergeTrees = require('broccoli-merge-trees');
+var defaults = require('lodash.defaults');
 var rename = require('broccoli-stew').rename;
 
 var momentPath = path.dirname(require.resolve('moment'));
+
+function makeArray(obj) {
+  if (Array.isArray(obj)) {
+    return obj;
+  }
+
+  if (typeof obj === 'undefined') {
+    obj = [];
+  }
+  else {
+    obj = [obj];
+  }
+
+  return obj;
+}
 
 module.exports = {
   name: 'moment',
@@ -29,15 +45,33 @@ module.exports = {
 
     var vendor = this.treePaths.vendor;
     var options = this.getConfig();
+
     app.import(path.join(vendor, 'moment', 'min', 'moment.min.js'));
 
-    if (options.moment && options.moment.includeTimezone) {
+    if (options.includeTimezone) {
       app.import(path.join(vendor, 'moment-timezone', 'tz.js'));
     }
+
+    options.includeLocales.map(function(locale) {
+      app.import(path.join(vendor, 'moment', 'locales', locale + '.js'))
+    });
   },
 
   getConfig: function() {
-    return this.project.config(process.env.EMBER_ENV) || {};
+    var projectConfig = ((this.project.config(process.env.EMBER_ENV) || {}).moment || {});
+
+    var config = defaults(projectConfig, {
+      includeTimezone: null,
+      includeLocales: []
+    });
+
+    config.includeLocales = makeArray(config.includeLocales).filter(function(locale) {
+      return typeof locale === 'string';
+    }).map(function(locale) {
+      return locale.replace('.js', '').trim().toLowerCase();
+    });
+
+    return config;
   },
 
   treeForVendor: function(vendorTree) {
@@ -48,8 +82,6 @@ module.exports = {
       trees.push(vendorTree);
     }
 
-    options = options.moment || {};
-
     trees.push(new Funnel(momentPath, {
       destDir: 'moment',
       include: [new RegExp(/\.js$/)],
@@ -57,6 +89,16 @@ module.exports = {
         return new RegExp(key + '\.js$');
       })
     }));
+
+    if (options.includeLocales.length) {
+      trees.push(new Funnel(momentPath, {
+        srcDir: 'locale',
+        destDir: path.join('moment', 'locales'),
+        include: options.includeLocales.map(function(locale) {
+          return new RegExp(locale + '.js$');
+        })
+      }));
+    }
 
     if (options.includeTimezone) {
       var timezonePath = [this.project.bowerDirectory, 'moment-timezone', 'builds'];
