@@ -28,7 +28,9 @@ module.exports = function(environment) {
   };
 ```
 
-## Include moment locales for i18n support
+## i18n support
+
+### Cherry pick locales (optimal)
 
 ```js
 // config.environment.js
@@ -41,6 +43,20 @@ module.exports = function(environment) {
     }
   };
 ```
+
+### Include all locales
+
+```js
+// config.environment.js
+module.exports = function(environment) {
+  return {
+    moment: {
+      includeLocales: true
+    }
+  };
+```
+
+### Configure default runtime locale
 
 ```js
 // app/routes/applicaton.js
