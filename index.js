@@ -8,21 +8,6 @@ var rename = require('broccoli-stew').rename;
 
 var momentPath = path.dirname(require.resolve('moment'));
 
-function makeArray(obj) {
-  if (Array.isArray(obj)) {
-    return obj;
-  }
-
-  if (typeof obj === 'undefined') {
-    obj = [];
-  }
-  else {
-    obj = [obj];
-  }
-
-  return obj;
-}
-
 module.exports = {
   name: 'moment',
 
@@ -46,15 +31,21 @@ module.exports = {
     var vendor = this.treePaths.vendor;
     var options = this.getConfig();
 
-    app.import(path.join(vendor, 'moment', 'min', 'moment.min.js'));
+    if (typeof options.includeLocales === 'boolean' && options.includeLocales) {
+      app.import(path.join(vendor, 'moment', 'min', 'moment-with-locales.min.js'));
+    }
+    else {
+      app.import(path.join(vendor, 'moment', 'min', 'moment.min.js'));
+      if (Array.isArray(options.includeLocales)) {
+        options.includeLocales.map(function(locale) {
+          app.import(path.join(vendor, 'moment', 'locales', locale + '.js'))
+        });
+      }
+    }
 
     if (options.includeTimezone) {
       app.import(path.join(vendor, 'moment-timezone', 'tz.js'));
     }
-
-    options.includeLocales.map(function(locale) {
-      app.import(path.join(vendor, 'moment', 'locales', locale + '.js'))
-    });
   },
 
   getConfig: function() {
@@ -65,11 +56,13 @@ module.exports = {
       includeLocales: []
     });
 
-    config.includeLocales = makeArray(config.includeLocales).filter(function(locale) {
-      return typeof locale === 'string';
-    }).map(function(locale) {
-      return locale.replace('.js', '').trim().toLowerCase();
-    });
+    if (Array.isArray(config.includeLocales)) {
+      config.includeLocales = config.includeLocales.filter(function(locale) {
+        return typeof locale === 'string';
+      }).map(function(locale) {
+        return locale.replace('.js', '').trim().toLowerCase();
+      });
+    }
 
     return config;
   },
@@ -90,7 +83,7 @@ module.exports = {
       })
     }));
 
-    if (options.includeLocales.length) {
+    if (Array.isArray(options.includeLocales) && options.includeLocales.length) {
       trees.push(new Funnel(momentPath, {
         srcDir: 'locale',
         destDir: path.join('moment', 'locales'),
