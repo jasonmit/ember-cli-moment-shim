@@ -6,8 +6,6 @@ var mergeTrees = require('broccoli-merge-trees');
 var defaults = require('lodash.defaults');
 var rename = require('broccoli-stew').rename;
 
-var momentPath = path.dirname(require.resolve('moment'));
-
 module.exports = {
   name: 'moment',
 
@@ -75,6 +73,8 @@ module.exports = {
       trees.push(vendorTree);
     }
 
+    var momentPath = path.join(this.project.bowerDirectory, 'moment');
+
     trees.push(new Funnel(momentPath, {
       destDir: 'moment',
       include: [new RegExp(/\.js$/)],
@@ -107,7 +107,7 @@ module.exports = {
           timezonePath.push('moment-timezone.min.js');
           break;
         default:
-          throw new Error("Ember Moment: Please specify the moment-timezone dataset to include as either 'all', '2010-2020', or 'none'.");
+          throw new Error("ember-moment: Please specify the moment-timezone dataset to include as either 'all', '2010-2020', or 'none'.");
           break;
       }
 

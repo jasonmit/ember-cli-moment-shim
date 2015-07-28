@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-moment-shim",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Brings moment and moment-timezone into your Ember applications",
   "scripts": {
     "start": "ember server",
@@ -25,8 +25,7 @@
     "broccoli-merge-trees": "^0.2.1",
     "broccoli-stew": "^0.3.3",
     "ember-cli-babel": "^5.0.0",
-    "lodash.defaults": "^3.1.2",
-    "moment": "~2.8.4"
+    "lodash.defaults": "^3.1.2"
   },
   "devDependencies": {
     "broccoli-asset-rev": "^2.0.2",
