@@ -29,20 +29,20 @@ module.exports = {
     var vendor = this.treePaths.vendor;
     var options = this.getConfig();
 
-    if (typeof options.includeLocales === 'boolean' && options.includeLocales) {
-      app.import(path.join(vendor, 'moment', 'min', 'moment-with-locales.min.js'));
-    }
-    else {
-      app.import(path.join(vendor, 'moment', 'min', 'moment.min.js'));
-      if (Array.isArray(options.includeLocales)) {
-        options.includeLocales.map(function(locale) {
-          app.import(path.join(vendor, 'moment', 'locales', locale + '.js'))
-        });
-      }
+    if (options.includeTimezone) {
+      app.import(path.join(vendor, 'moment-timezone', 'tz.js'), { prepend: true });
     }
 
-    if (options.includeTimezone) {
-      app.import(path.join(vendor, 'moment-timezone', 'tz.js'));
+    if (typeof options.includeLocales === 'boolean' && options.includeLocales) {
+      app.import(path.join(vendor, 'moment', 'min', 'moment-with-locales.min.js'), { prepend: true });
+    }
+    else {
+      if (Array.isArray(options.includeLocales)) {
+        options.includeLocales.map(function(locale) {
+          app.import(path.join(vendor, 'moment', 'locales', locale + '.js'), { prepend: true })
+        });
+      }
+      app.import(path.join(vendor, 'moment', 'min', 'moment.min.js'), { prepend: true });
     }
   },
 
