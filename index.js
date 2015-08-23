@@ -5,6 +5,8 @@ var Funnel = require('broccoli-funnel');
 var mergeTrees = require('broccoli-merge-trees');
 var defaults = require('lodash.defaults');
 var rename = require('broccoli-stew').rename;
+var existsSync = require('exists-sync');
+var chalk = require('chalk');
 
 module.exports = {
   name: 'moment',
@@ -18,6 +20,7 @@ module.exports = {
     }
 
     this.app = app;
+    this.options = this.getConfig();
     this.importDependencies(app);
   },
 
@@ -27,7 +30,7 @@ module.exports = {
     }
 
     var vendor = this.treePaths.vendor;
-    var options = this.getConfig();
+    var options = this.options;
 
     if (options.includeTimezone) {
       app.import(path.join(vendor, 'moment-timezone', 'tz.js'), { prepend: true });
@@ -48,8 +51,10 @@ module.exports = {
 
   getConfig: function() {
     var projectConfig = ((this.project.config(process.env.EMBER_ENV) || {}).moment || {});
+    var momentPath = path.join(this.project.bowerDirectory, 'moment');
 
     var config = defaults(projectConfig, {
+      momentPath: momentPath,
       includeTimezone: null,
       includeLocales: []
     });
@@ -59,6 +64,18 @@ module.exports = {
         return typeof locale === 'string';
       }).map(function(locale) {
         return locale.replace('.js', '').trim().toLowerCase();
+      }).filter(function(locale) {
+        if (locale === 'en') {
+            // `en` is included by default.  quietly ignore if user specifies it in the list
+            return false;
+        }
+
+        if (!existsSync(path.join(momentPath, 'locale', locale + '.js'))) {
+          console.log(chalk.red('ember-moment: Specified locale `' + locale + '` but could not find in moment/locale.\nVisit https://github.com/moment/moment/tree/master/locale to view the full list of supported locales.'));
+          return false;
+        }
+
+        return true;
       });
     }
 
@@ -67,15 +84,13 @@ module.exports = {
 
   treeForVendor: function(vendorTree) {
     var trees = [];
-    var options = this.getConfig();
+    var options = this.options;
 
     if (vendorTree) {
       trees.push(vendorTree);
     }
 
-    var momentPath = path.join(this.project.bowerDirectory, 'moment');
-
-    trees.push(new Funnel(momentPath, {
+    trees.push(new Funnel(options.momentPath, {
       destDir: 'moment',
       include: [new RegExp(/\.js$/)],
       exclude: ['tests', 'ender', 'package'].map(function(key) {
@@ -84,13 +99,15 @@ module.exports = {
     }));
 
     if (Array.isArray(options.includeLocales) && options.includeLocales.length) {
-      trees.push(new Funnel(momentPath, {
+      var localeTree = new Funnel(options.momentPath, {
         srcDir: 'locale',
         destDir: path.join('moment', 'locales'),
         include: options.includeLocales.map(function(locale) {
           return new RegExp(locale + '.js$');
         })
-      }));
+      });
+
+      trees.push(localeTree);
     }
 
     if (options.includeTimezone) {
