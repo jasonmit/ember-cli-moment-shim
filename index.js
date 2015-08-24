@@ -66,8 +66,8 @@ module.exports = {
         return locale.replace('.js', '').trim().toLowerCase();
       }).filter(function(locale) {
         if (locale === 'en') {
-            // `en` is included by default.  quietly ignore if user specifies it in the list
-            return false;
+          // `en` is included by default.  quietly ignore if user specifies it in the list
+          return false;
         }
 
         if (!existsSync(path.join(momentPath, 'locale', locale + '.js'))) {
