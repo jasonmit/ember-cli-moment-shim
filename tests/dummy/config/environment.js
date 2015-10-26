@@ -8,7 +8,9 @@ module.exports = function(environment) {
     locationType: 'auto',
     moment: {
       includeTimezone: 'all',
-      includeLocales: ['es']
+      includeLocales: ['es'],
+      // relative to `dist`
+      localeOutputPath: 'assets/moment-locales'
     },
     EmberENV: {
       FEATURES: {

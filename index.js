@@ -45,6 +45,7 @@ module.exports = {
           app.import(path.join(vendor, 'moment', 'locales', locale + '.js'), { prepend: true })
         });
       }
+
       app.import(path.join(vendor, 'moment', 'min', 'moment.min.js'), { prepend: true });
     }
   },
@@ -80,6 +81,25 @@ module.exports = {
     }
 
     return config;
+  },
+
+  treeForPublic: function() {
+    var publicTree = this._super.treeForPublic.apply(this, arguments);
+    var options = this.options;
+    var trees = [];
+
+    if (publicTree) {
+      trees.push(publicTree);
+    }
+
+    if (options.localeOutputPath) {
+      trees.push(new Funnel(options.momentPath, {
+        srcDir: 'locale',
+        destDir: options.localeOutputPath
+      }));
+    }
+
+    return mergeTrees(trees);
   },
 
   treeForVendor: function(vendorTree) {
