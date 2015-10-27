@@ -73,6 +73,20 @@ export default Ember.Route.extend({
 });
 ```
 
+### Write all the locales to a folder relative to `dist`
+
+```js
+// config.environment.js
+module.exports = function(environment) {
+  return {
+    moment: {
+      // This will output _all_ locale scripts to assets/moment-locales
+      // this option does not respect includeLocales
+      localeOutputPath: 'assets/moment-locales'
+    }
+  };
+```
+
 Feature set of i18n support within moment can be found here:  http://momentjs.com/docs/#/i18n/
 
 ## License
