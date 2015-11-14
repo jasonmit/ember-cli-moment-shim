@@ -19,7 +19,7 @@ module.exports = {
     }
 
     this.app = app;
-    this.options = this.getConfig();
+    this.momentOptions = this.getConfig();
     this.importDependencies(app);
   },
 
@@ -29,7 +29,7 @@ module.exports = {
     }
 
     var vendor = this.treePaths.vendor;
-    var options = this.options;
+    var options = this.momentOptions;
 
     if (options.includeTimezone) {
       app.import(vendor + '/moment-timezone/tz.js', { prepend: true });
@@ -84,7 +84,7 @@ module.exports = {
 
   treeForPublic: function() {
     var publicTree = this._super.treeForPublic.apply(this, arguments);
-    var options = this.options;
+    var options = this.momentOptions;
     var trees = [];
 
     if (publicTree) {
@@ -103,7 +103,7 @@ module.exports = {
 
   treeForVendor: function(vendorTree) {
     var trees = [];
-    var options = this.options;
+    var options = this.momentOptions;
 
     if (vendorTree) {
       trees.push(vendorTree);
