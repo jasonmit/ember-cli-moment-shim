@@ -11,8 +11,8 @@ module.exports = {
     // we need to install moment-timezone via bower since npmignore
     // ignores `moment-timezone/builds/*`
     return this.addBowerPackagesToProject([
-      { name: 'moment', target: '>= 2.8.0' },
-      { name: 'moment-timezone', target: '>= 0.1.0' }
+      { name: 'moment', target: '>= 2.8.0 < 2.11.0' },
+      { name: 'moment-timezone', target: '>= 0.1.0 <= 0.5.0' }
     ]);
   }
 };
