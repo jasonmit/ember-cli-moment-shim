@@ -6,6 +6,7 @@ var defaults = require('lodash.defaults');
 var rename = require('broccoli-stew').rename;
 var existsSync = require('exists-sync');
 var chalk = require('chalk');
+var path = require('path');
 
 module.exports = {
   name: 'moment',
@@ -51,7 +52,7 @@ module.exports = {
 
   getConfig: function() {
     var projectConfig = ((this.project.config(process.env.EMBER_ENV) || {}).moment || {});
-    var momentPath = this.project.bowerDirectory + '/moment';
+    var momentPath = path.dirname(require.resolve('moment'));
 
     var config = defaults(projectConfig, {
       momentPath: momentPath,
@@ -130,7 +131,8 @@ module.exports = {
     }
 
     if (options.includeTimezone) {
-      var timezonePath = [this.project.bowerDirectory, 'moment-timezone', 'builds'];
+      var momentTimezonePath = path.dirname(require.resolve('moment-timezone'));
+      var timezonePath = [momentTimezonePath, 'builds'];
 
       switch(options.includeTimezone) {
         case 'all':
@@ -147,7 +149,7 @@ module.exports = {
           break;
       }
 
-      trees.push(rename(new Funnel(this.project.bowerDirectory + '/moment-timezone/builds', {
+      trees.push(rename(new Funnel(momentTimezonePath + '/builds', {
         files: [timezonePath[timezonePath.length - 1]]
       }), function(filepath) {
         return 'moment-timezone/tz.js';
