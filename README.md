@@ -97,6 +97,6 @@ Feature set of i18n support within moment can be found here:  http://momentjs.co
 ember-cli-moment-shim shims is [MIT Licensed](https://github.com/jasonmit/ember-cli-moment-shim/blob/master/LICENSE.md).
 
 [embadge]: http://embadge.io/
-[ember-badge]: http://embadge.io/v1/badge.svg?start=1.13.0
+[ember-badge]: http://embadge.io/v1/badge.svg?start=1.0.0
 [npm]: https://www.npmjs.org/package/ember-cli-moment-shim
 [npm-badge]: https://img.shields.io/npm/v/ember-cli-moment-shim.svg?style=flat-square
