@@ -1,5 +1,8 @@
 # ember-cli-moment-shim
 [![Build Status](https://travis-ci.org/jasonmit/ember-cli-moment-shim.svg?branch=master)](https://travis-ci.org/jasonmit/ember-cli-moment-shim)
+[![npm Version][npm-badge]][npm]
+[![Ember Observer Score](http://emberobserver.com/badges/ember-cli-moment-shim.svg)](http://emberobserver.com/addons/ember-cli-moment-shim)
+[![Ember badge][ember-badge]][embadge]
 
 ES6 accessible module for momentjs within your Ember applications.
 
@@ -92,3 +95,8 @@ Feature set of i18n support within moment can be found here:  http://momentjs.co
 ## License
 
 ember-cli-moment-shim shims is [MIT Licensed](https://github.com/jasonmit/ember-cli-moment-shim/blob/master/LICENSE.md).
+
+[embadge]: http://embadge.io/
+[ember-badge]: http://embadge.io/v1/badge.svg?start=1.13.0
+[npm]: https://www.npmjs.org/package/ember-cli-moment-shim
+[npm-badge]: https://img.shields.io/npm/v/ember-cli-moment-shim.svg?style=flat-square
