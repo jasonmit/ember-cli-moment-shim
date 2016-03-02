@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-moment-shim",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Brings moment and moment-timezone into your Ember applications",
   "scripts": {
     "start": "ember server",
@@ -53,7 +53,10 @@
   ],
   "ember-addon": {
     "configPath": "tests/dummy/config",
-    "fastBootDependencies": ["moment", "moment-timezone"],
+    "fastBootDependencies": [
+      "moment",
+      "moment-timezone"
+    ],
     "before": [
       "ember-moment"
     ]
