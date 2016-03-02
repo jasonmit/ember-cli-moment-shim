@@ -1,3 +1,5 @@
+/*jshint node:true*/
+
 'use strict';
 
 var Funnel = require('broccoli-funnel');
@@ -21,10 +23,23 @@ module.exports = {
 
     this.app = app;
     this.momentOptions = this.getConfig();
-    this.importDependencies(app);
+
+    if (isFastBoot()) {
+      this.importFastBootDependencies(app);
+    } else {
+      this.importBrowserDependencies(app);
+    }
   },
 
-  importDependencies: function(app) {
+  importFastBootDependencies: function(app) {
+    if (arguments.length < 1) {
+      throw new Error('Application instance must be passed to import');
+    }
+
+    app.import("vendor/fastboot-moment-timezone.js");
+  },
+
+  importBrowserDependencies: function(app) {
     if (arguments.length < 1) {
       throw new Error('Application instance must be passed to import');
     }
@@ -42,7 +57,7 @@ module.exports = {
     else {
       if (Array.isArray(options.includeLocales)) {
         options.includeLocales.map(function(locale) {
-          app.import(vendor + '/moment/locales/' + locale + '.js', { prepend: true })
+          app.import(vendor + '/moment/locales/' + locale + '.js', { prepend: true });
         });
       }
 
@@ -85,6 +100,11 @@ module.exports = {
 
   treeForPublic: function() {
     var publicTree = this._super.treeForPublic.apply(this, arguments);
+
+    if (isFastBoot()) {
+      return publicTree;
+    }
+
     var options = this.momentOptions;
     var trees = [];
 
@@ -103,6 +123,29 @@ module.exports = {
   },
 
   treeForVendor: function(vendorTree) {
+    if (isFastBoot()) {
+      return this.treeForNodeVendor(vendorTree);
+    } else {
+      return this.treeForBrowserVendor(vendorTree);
+    }
+  },
+
+  treeForNodeVendor: function(vendorTree) {
+    var trees = [];
+
+    if (vendorTree) {
+      trees.push(vendorTree);
+    }
+
+    trees.push(new Funnel(path.join(__dirname, './assets'), {
+      files: ['fastboot-moment-timezone.js'],
+    }));
+
+    return mergeTrees(trees);
+  },
+
+  treeForBrowserVendor: function(vendorTree) {
+
     var trees = [];
     var options = this.momentOptions;
 
@@ -146,12 +189,11 @@ module.exports = {
           break;
         default:
           throw new Error("ember-moment: Please specify the moment-timezone dataset to include as either 'all', '2010-2020', or 'none'.");
-          break;
       }
 
       trees.push(rename(new Funnel(momentTimezonePath + '/builds', {
         files: [timezonePath[timezonePath.length - 1]]
-      }), function(filepath) {
+      }), function(/*filepath*/) {
         return 'moment-timezone/tz.js';
       }));
     }
@@ -159,3 +201,10 @@ module.exports = {
     return mergeTrees(trees);
   }
 };
+
+// Checks to see whether this build is targeting FastBoot. Note that we cannot
+// check this at boot time--the environment variable is only set once the build
+// has started, which happens after this file is evaluated.
+function isFastBoot() {
+  return process.env.EMBER_CLI_FASTBOOT === 'true';
+}
