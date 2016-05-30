@@ -2,6 +2,8 @@
 
 'use strict';
 
+require('ember-cli-import-polyfill');
+
 var Funnel = require('broccoli-funnel');
 var mergeTrees = require('broccoli-merge-trees');
 var defaults = require('lodash.defaults');
@@ -13,57 +15,42 @@ var path = require('path');
 module.exports = {
   name: 'moment',
 
-  included: function(app) {
+  included: function() {
     this._super.included.apply(this, arguments);
 
-    // see: https://github.com/ember-cli/ember-cli/issues/3718
-    while (typeof app.import !== 'function' && app.app) {
-      app = app.app;
-    }
-
-    this.app = app;
     this.momentOptions = this.getConfig();
 
     if (isFastBoot()) {
-      this.importFastBootDependencies(app);
+      this.importFastBootDependencies();
     } else {
-      this.importBrowserDependencies(app);
+      this.importBrowserDependencies();
     }
-
-    return app;
   },
 
-  importFastBootDependencies: function(app) {
-    if (arguments.length < 1) {
-      throw new Error('Application instance must be passed to import');
-    }
-
-    app.import("vendor/fastboot-moment-timezone.js");
+  importFastBootDependencies: function() {
+    this.import("vendor/fastboot-moment-timezone.js");
   },
 
-  importBrowserDependencies: function(app) {
-    if (arguments.length < 1) {
-      throw new Error('Application instance must be passed to import');
-    }
-
+  importBrowserDependencies: function() {
     var vendor = this.treePaths.vendor;
     var options = this.momentOptions;
 
     if (options.includeTimezone) {
-      app.import(vendor + '/moment-timezone/tz.js', { prepend: true });
+      this.import(vendor + '/moment-timezone/tz.js', { prepend: true });
     }
 
     if (typeof options.includeLocales === 'boolean' && options.includeLocales) {
-      app.import(vendor + '/moment/min/moment-with-locales.min.js', { prepend: true });
+      this.import(vendor + '/moment/min/moment-with-locales.min.js', { prepend: true });
     }
     else {
       if (Array.isArray(options.includeLocales)) {
+        var addon = this;
         options.includeLocales.map(function(locale) {
-          app.import(vendor + '/moment/locales/' + locale + '.js', { prepend: true });
+          addon.import(vendor + '/moment/locales/' + locale + '.js', { prepend: true });
         });
       }
 
-      app.import(vendor + '/moment/min/moment.min.js', { prepend: true });
+      this.import(vendor + '/moment/min/moment.min.js', { prepend: true });
     }
   },
 
