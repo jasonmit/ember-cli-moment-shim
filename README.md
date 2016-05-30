@@ -14,6 +14,12 @@ ES6 accessible module for momentjs within your Ember applications.
 import moment from 'moment';
 ```
 
+## Features
+
+* ES6 accessible module for moment
+* Convient way to bring in locales & timezones through configuration
+* FastBoot support
+
 ## Upgrading
 
 Whenever an upgrading ember-cli-moment-shim, be sure to rerun the generator manually if not installed via `ember install`.  To do this, `ember g ember-cli-moment-shim`
