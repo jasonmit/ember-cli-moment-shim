@@ -33,8 +33,15 @@ for (let momentProp in moment) {
     Object.defineProperty(comparableMoment, momentProp, {
       enumerable: true,
       configurable: true,
-      get() { return moment[momentProp]; },
-      set(newValue) { moment[momentProp] = newValue; }
+      get() {
+        console.log('get', momentProp);
+
+        return moment[momentProp];
+      },
+      set(newValue) {
+        console.log('set', momentProp);
+        moment[momentProp] = newValue;
+      }
     });
   }
 }
