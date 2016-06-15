@@ -6,17 +6,17 @@ const moment = self.moment;
 
 const ComparableMoment = Ember.Object.extend(Ember.Comparable, moment.fn, {
   compare(a, b) {
-    if (moment.isMoment(a) && moment.isMoment(b) && a.isBefore(b)) {
-      return -1;
-    } else if (moment.isMoment(a) && moment.isMoment(b) && a.isAfter(b)) {
-      return 1;
-    } else if (moment.isMoment(a) && !moment.isMoment(b)) {
-      return 1;
-    } else if (moment.isMoment(b)) {
-      return -1;
+    if (moment.isMoment(a) && moment.isMoment(b)) {
+      if (a.isBefore(b)) {
+        return -1;
+      } else if (a.isSame(b)) {
+        return 0;
+      } else {
+        return 1;
+      }
     }
 
-    return 0;
+    throw new Error('Arguments provided to `compare` are not moment objects');
   },
 
   clone() {
@@ -34,9 +34,7 @@ for (let momentProp in moment) {
       enumerable: true,
       configurable: true,
       get() { return moment[momentProp]; },
-      set(newValue) {
-        moment[momentProp] = newValue;
-      }
+      set(newValue) { moment[momentProp] = newValue; }
     });
   }
 }

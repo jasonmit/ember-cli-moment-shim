@@ -28,8 +28,8 @@ test('moment.now reassigned equals self.moment.now', (assert) => {
 
 test('moment now reassigned is utilized in moment().format()', (assert) => {
   moment.now = function() {
-    return 0;
+    return 1000;
   };
 
-  assert.equal(moment().format('YYYY'), 1969);
+  assert.equal(moment.utc().year(), 1970);
 });
