@@ -31,5 +31,5 @@ test('moment now reassigned is utilized in moment().format()', (assert) => {
     return 1000;
   };
 
-  assert.equal(moment().utc().year(), 1970);
+  assert.equal(moment.utc().year(), 1970);
 });

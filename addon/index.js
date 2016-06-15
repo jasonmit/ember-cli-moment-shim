@@ -28,29 +28,26 @@ function comparableMoment() {
   return ComparableMoment.create(moment(...arguments));
 };
 
-for (let momentProp in moment) {
-  if (moment.hasOwnProperty(momentProp)) {
-    Object.defineProperty(comparableMoment, momentProp, {
-      enumerable: true,
-      configurable: true,
-      get() {
-        console.log('get', momentProp);
-
-        return moment[momentProp];
-      },
-      set(newValue) {
-        console.log('set', momentProp);
-        moment[momentProp] = newValue;
-      }
-    });
-  }
-}
-
 // Wrap global moment methods that return a full moment object
 ['utc', 'unix'].forEach((methodName) => {
   comparableMoment[methodName] = function() {
     return ComparableMoment.create(moment[methodName](...arguments));
   };
 });
+
+for (let momentProp in moment) {
+  if (moment.hasOwnProperty(momentProp) && !comparableMoment.hasOwnProperty(momentProp)) {
+    Object.defineProperty(comparableMoment, momentProp, {
+      enumerable: true,
+      configurable: true,
+      get() {
+        return moment[momentProp];
+      },
+      set(newValue) {
+        moment[momentProp] = newValue;
+      }
+    });
+  }
+}
 
 export default comparableMoment;
