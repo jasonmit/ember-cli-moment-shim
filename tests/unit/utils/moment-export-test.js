@@ -25,3 +25,15 @@ test('moment tz fn exists', (assert) => {
 test('moment getLocale for `es`', (assert) => {
   assert.equal(typeof moment.localeData('es'), 'object');
 });
+
+test('moment.now is a class function', (assert) => {
+  assert.equal(typeof moment.now, 'function');
+});
+
+test('moment.utc is a class function', (assert) => {
+  assert.equal(typeof moment.utc, 'function');
+});
+
+test('moment().clone is an instance function', (assert) => {
+  assert.equal(typeof moment().clone, 'function');
+});

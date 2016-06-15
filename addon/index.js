@@ -1,6 +1,10 @@
+/* globals self */
+
 import Ember from 'ember';
 
-let ComparableMoment = Ember.Object.extend(Ember.Comparable, moment.fn, {
+const moment = self.moment;
+
+const ComparableMoment = Ember.Object.extend(Ember.Comparable, moment.fn, {
   compare(a, b) {
     if (moment.isMoment(a) && moment.isMoment(b) && a.isBefore(b)) {
       return -1;
@@ -13,30 +17,35 @@ let ComparableMoment = Ember.Object.extend(Ember.Comparable, moment.fn, {
     }
 
     return 0;
+  },
+
+  clone() {
+    return comparableMoment(this);
   }
 });
 
-let comparableMoment = function() {
-  return ComparableMoment.create(moment.apply(this, arguments));
+function comparableMoment() {
+  return ComparableMoment.create(moment(...arguments));
 };
 
 for (let momentProp in moment) {
   if (moment.hasOwnProperty(momentProp)) {
-    comparableMoment[momentProp] = moment[momentProp];
+    Object.defineProperty(comparableMoment, momentProp, {
+      enumerable: true,
+      configurable: true,
+      get() { return moment[momentProp]; },
+      set(newValue) {
+        moment[momentProp] = newValue;
+      }
+    });
   }
 }
 
 // Wrap global moment methods that return a full moment object
-['utc', 'unix'].forEach((method) => {
-  comparableMoment[method] = function() {
-    return ComparableMoment.create(moment[method].apply(this, arguments));
+['utc', 'unix'].forEach((methodName) => {
+  comparableMoment[methodName] = function() {
+    return ComparableMoment.create(moment[methodName](...arguments));
   };
-});
-
-ComparableMoment.reopen({
-  clone() {
-    return comparableMoment(this);
-  }
 });
 
 export default comparableMoment;
