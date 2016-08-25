@@ -56,6 +56,8 @@ module.exports = function(environment) {
   };
 ```
 
+*NOTE: English is bundled automatically, not need to add `en` in `includeLocales`*
+
 ### Include all locales
 
 ```js
