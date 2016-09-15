@@ -50,11 +50,17 @@ module.exports = {
     var options = this.momentOptions;
 
     if (options.includeTimezone) {
-      app.import(vendor + '/moment-timezone/tz.js', { prepend: true });
+      app.import({
+        development: vendor + '/moment-timezone/tz.js',
+        production: vendor + '/moment-timezone/tz.min.js'
+      }, { prepend: true });
     }
 
     if (typeof options.includeLocales === 'boolean' && options.includeLocales) {
-      app.import(vendor + '/moment/min/moment-with-locales.min.js', { prepend: true });
+      app.import({
+        development: vendor + '/moment/min/moment-with-locales.js',
+        production: vendor + '/moment/min/moment-with-locales.min.js'
+      }, { prepend: true });
     }
     else {
       if (Array.isArray(options.includeLocales)) {
@@ -63,7 +69,10 @@ module.exports = {
         });
       }
 
-      app.import(vendor + '/moment/min/moment.min.js', { prepend: true });
+      app.import({
+        development: vendor + '/moment/moment.js',
+        production: vendor + '/moment/min/moment.min.js'
+      }, { prepend: true });
     }
   },
 
@@ -178,25 +187,35 @@ module.exports = {
     if (options.includeTimezone) {
       var momentTimezonePath = path.dirname(require.resolve('moment-timezone'));
       var timezonePath;
+      var timezoneMinPath;
 
       switch(options.includeTimezone) {
         case 'all':
-          timezonePath = 'moment-timezone-with-data.min.js';
+          timezonePath = 'builds/moment-timezone-with-data.js';
+          timezoneMinPath = 'builds/moment-timezone-with-data.min.js';
           break;
         case '2010-2020':
-          timezonePath = 'moment-timezone-with-data-2010-2020.min.js';
+          timezonePath = 'builds/moment-timezone-with-data-2010-2020.js';
+          timezoneMinPath = 'builds/moment-timezone-with-data-2010-2020.min.js';
           break;
         case 'none':
-          timezonePath = 'moment-timezone.min.js';
+          timezonePath = 'moment-timezone.js';
+          timezoneMinPath = 'builds/moment-timezone.min.js';
           break;
         default:
           throw new Error('ember-moment: Please specify the moment-timezone dataset to include as either "all", "2010-2020", or "none".');
       }
 
-      trees.push(rename(new Funnel(momentTimezonePath + '/builds', {
+      trees.push(rename(new Funnel(momentTimezonePath, {
         files: [timezonePath]
       }), function(/*filepath*/) {
         return 'moment-timezone/tz.js';
+      }));
+
+      trees.push(rename(new Funnel(momentTimezonePath, {
+        files: [timezoneMinPath]
+      }), function(/*filepath*/) {
+        return 'moment-timezone/tz.min.js';
       }));
     }
 
