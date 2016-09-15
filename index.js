@@ -38,7 +38,7 @@ module.exports = {
       throw new Error('Application instance must be passed to import');
     }
 
-    app.import("vendor/fastboot-moment-timezone.js");
+    app.import('vendor/fastboot-moment-timezone.js');
   },
 
   importBrowserDependencies: function(app) {
@@ -190,7 +190,7 @@ module.exports = {
           timezonePath = 'moment-timezone.min.js';
           break;
         default:
-          throw new Error("ember-moment: Please specify the moment-timezone dataset to include as either 'all', '2010-2020', or 'none'.");
+          throw new Error('ember-moment: Please specify the moment-timezone dataset to include as either "all", "2010-2020", or "none".');
       }
 
       trees.push(rename(new Funnel(momentTimezonePath + '/builds', {
