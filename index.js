@@ -177,24 +177,24 @@ module.exports = {
 
     if (options.includeTimezone) {
       var momentTimezonePath = path.dirname(require.resolve('moment-timezone'));
-      var timezonePath = [momentTimezonePath, 'builds'];
+      var timezonePath;
 
       switch(options.includeTimezone) {
         case 'all':
-          timezonePath.push('moment-timezone-with-data.min.js');
+          timezonePath = 'moment-timezone-with-data.min.js';
           break;
         case '2010-2020':
-          timezonePath.push('moment-timezone-with-data-2010-2020.min.js');
+          timezonePath = 'moment-timezone-with-data-2010-2020.min.js';
           break;
         case 'none':
-          timezonePath.push('moment-timezone.min.js');
+          timezonePath = 'moment-timezone.min.js';
           break;
         default:
           throw new Error("ember-moment: Please specify the moment-timezone dataset to include as either 'all', '2010-2020', or 'none'.");
       }
 
       trees.push(rename(new Funnel(momentTimezonePath + '/builds', {
-        files: [timezonePath[timezonePath.length - 1]]
+        files: [timezonePath]
       }), function(/*filepath*/) {
         return 'moment-timezone/tz.js';
       }));
