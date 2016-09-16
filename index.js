@@ -38,7 +38,9 @@ module.exports = {
       throw new Error('Application instance must be passed to import');
     }
 
-    app.import('vendor/fastboot-moment-timezone.js');
+    var vendor = this.treePaths.vendor;
+
+    app.import(vendor + '/fastboot-moment-timezone.js');
   },
 
   importBrowserDependencies: function(app) {
