@@ -39,11 +39,8 @@ module.exports = {
     }
 
     var vendor = this.treePaths.vendor;
-    var options = this.momentOptions;
 
-    if (options.includeTimezone) {
-      app.import(vendor + '/fastboot-moment-timezone.js');
-    }
+    app.import(vendor + '/fastboot-moment.js');
   },
 
   importBrowserDependencies: function(app) {
@@ -154,11 +151,23 @@ module.exports = {
       trees.push(vendorTree);
     }
 
+    var fileName;
     if (options.includeTimezone) {
-      trees.push(new Funnel(path.join(__dirname, './assets'), {
-        files: ['fastboot-moment-timezone.js'],
-      }));
+      // includes all of moment.js
+      fileName = 'fastboot-moment-timezone.js';
+    } else {
+      fileName = 'fastboot-moment.js';
     }
+
+    var tree = new Funnel(path.join(__dirname, './assets'), {
+      files: [fileName],
+    });
+
+    tree = rename(tree, function() {
+      return 'fastboot-moment.js';
+    });
+
+    trees.push(tree);
 
     return mergeTrees(trees);
   },

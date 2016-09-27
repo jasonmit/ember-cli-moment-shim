@@ -1,5 +1,5 @@
 (function() {
   define('moment', ['exports'], function(self) {
-    self['default'] = FastBoot.require('moment-timezone');
+    self['default'] = FastBoot.require('moment');
   });
 })();
