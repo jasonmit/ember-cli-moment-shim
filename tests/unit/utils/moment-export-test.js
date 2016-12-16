@@ -14,6 +14,10 @@ test('moment compare fn exists', (assert) => {
   assert.equal(typeof instance.compare, 'function');
 });
 
+test('moment() instanceof moment', (assert) => {
+  assert.equal(moment() instanceof moment, true);
+});
+
 test('moment compare functions property', (assert) => {
   const instanceA = moment(0);
   const instanceB = moment(10000);
