@@ -67,7 +67,7 @@ module.exports = {
     else {
       if (Array.isArray(options.includeLocales)) {
         options.includeLocales.map(function(locale) {
-          app.import(vendor + '/moment/locales/' + locale + '.js', { prepend: true });
+          app.import(vendor + '/moment/locale/' + locale + '.js', { prepend: true });
         });
       }
 
