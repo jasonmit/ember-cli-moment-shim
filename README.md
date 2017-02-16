@@ -38,6 +38,7 @@ module.exports = function(environment) {
       includeTimezone: 'all'
     }
   };
+}
 ```
 
 ## i18n support
