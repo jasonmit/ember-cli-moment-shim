@@ -24,26 +24,12 @@ module.exports = {
     this.app = app;
     this.momentOptions = this.getConfig();
 
-    if (isFastBoot()) {
-      this.importFastBootDependencies(app);
-    } else {
-      this.importBrowserDependencies(app);
-    }
+    this.importDependencies(app);
 
     return app;
   },
 
-  importFastBootDependencies: function(app) {
-    if (arguments.length < 1) {
-      throw new Error('Application instance must be passed to import');
-    }
-
-    var vendor = this.treePaths.vendor;
-
-    app.import(vendor + '/fastboot-moment.js');
-  },
-
-  importBrowserDependencies: function(app) {
+  importDependencies: function(app) {
     if (arguments.length < 1) {
       throw new Error('Application instance must be passed to import');
     }
@@ -114,10 +100,6 @@ module.exports = {
   treeForPublic: function() {
     var publicTree = this._super.treeForPublic.apply(this, arguments);
 
-    if (isFastBoot()) {
-      return publicTree;
-    }
-
     var options = this.momentOptions;
     var trees = [];
 
@@ -136,43 +118,6 @@ module.exports = {
   },
 
   treeForVendor: function(vendorTree) {
-    if (isFastBoot()) {
-      return this.treeForNodeVendor(vendorTree);
-    } else {
-      return this.treeForBrowserVendor(vendorTree);
-    }
-  },
-
-  treeForNodeVendor: function(vendorTree) {
-    var trees = [];
-    var options = this.momentOptions;
-
-    if (vendorTree) {
-      trees.push(vendorTree);
-    }
-
-    var fileName;
-    if (options.includeTimezone) {
-      // includes all of moment.js
-      fileName = 'fastboot-moment-timezone.js';
-    } else {
-      fileName = 'fastboot-moment.js';
-    }
-
-    var tree = new Funnel(path.join(__dirname, './assets'), {
-      files: [fileName],
-    });
-
-    tree = rename(tree, function() {
-      return 'fastboot-moment.js';
-    });
-
-    trees.push(tree);
-
-    return mergeTrees(trees);
-  },
-
-  treeForBrowserVendor: function(vendorTree) {
     var trees = [];
     var options = this.momentOptions;
 
@@ -238,10 +183,3 @@ module.exports = {
     return mergeTrees(trees);
   }
 };
-
-// Checks to see whether this build is targeting FastBoot. Note that we cannot
-// check this at boot time--the environment variable is only set once the build
-// has started, which happens after this file is evaluated.
-function isFastBoot() {
-  return process.env.EMBER_CLI_FASTBOOT === 'true';
-}
