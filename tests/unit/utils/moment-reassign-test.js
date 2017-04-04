@@ -48,5 +48,5 @@ test('compare', (assert) => {
   const yesterday = moment().subtract(1, 'day');
 
   assert.equal(today.compare(today, yesterday), 1);
-  assert.equal(today.compare(yesterday, today, ), -1);
+  assert.equal(today.compare(yesterday, today), -1);
 });
