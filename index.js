@@ -1,8 +1,6 @@
-/*jshint node:true*/
-
 'use strict';
 
-var Funnel = require('broccoli-funnel');
+var funnel = require('broccoli-funnel');
 var mergeTrees = require('broccoli-merge-trees');
 var defaults = require('lodash.defaults');
 var rename = require('broccoli-stew').rename;
@@ -126,7 +124,7 @@ module.exports = {
     }
 
     if (options.localeOutputPath) {
-      trees.push(new Funnel(options.momentPath, {
+      trees.push(funnel(options.momentPath, {
         srcDir: 'locale',
         destDir: options.localeOutputPath
       }));
@@ -159,7 +157,7 @@ module.exports = {
       fileName = 'fastboot-moment.js';
     }
 
-    var tree = new Funnel(path.join(__dirname, './assets'), {
+    var tree = funnel(path.join(__dirname, './assets'), {
       files: [fileName],
     });
 
@@ -180,7 +178,7 @@ module.exports = {
       trees.push(vendorTree);
     }
 
-    trees.push(new Funnel(options.momentPath, {
+    trees.push(funnel(options.momentPath, {
       destDir: 'moment',
       include: [new RegExp(/\.js$/)],
       exclude: ['tests', 'ender', 'package'].map(function(key) {
@@ -189,7 +187,7 @@ module.exports = {
     }));
 
     if (Array.isArray(options.includeLocales) && options.includeLocales.length) {
-      var localeTree = new Funnel(options.momentPath, {
+      var localeTree = funnel(options.momentPath, {
         srcDir: 'locale',
         destDir: 'moment/locales',
         include: options.includeLocales.map(function(locale) {
@@ -226,13 +224,13 @@ module.exports = {
           throw new Error('ember-moment: Please specify the moment-timezone dataset to include as either "all", "subset", or "none".');
       }
 
-      trees.push(rename(new Funnel(momentTimezonePath, {
+      trees.push(rename(funnel(momentTimezonePath, {
         include: [timezonePath]
       }), function() {
         return 'moment-timezone/tz.js';
       }));
 
-      trees.push(rename(new Funnel(momentTimezonePath, {
+      trees.push(rename(funnel(momentTimezonePath, {
         include: [timezoneMinPath]
       }), function() {
         return 'moment-timezone/tz.min.js';
