@@ -7,7 +7,7 @@ module.exports = function(environment) {
     rootURL: '/',
     locationType: 'auto',
     moment: {
-      includeTimezone: 'all',
+      includeTimezone: 'subset',
       includeLocales: ['es'],
       // relative to `dist`
       localeOutputPath: 'assets/moment-locales'

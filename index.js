@@ -211,26 +211,30 @@ module.exports = {
           timezoneMinPath = 'builds/moment-timezone-with-data.min.js';
           break;
         case '2010-2020':
-          timezonePath = 'builds/moment-timezone-with-data-2010-2020.js';
-          timezoneMinPath = 'builds/moment-timezone-with-data-2010-2020.min.js';
+          this.ui.writeLine(chalk.yellow('[ember-cli-moment-shim] "2010-2020" is deprecated, use "subset" within config/environment\nDiscussion: https://github.com/jasonmit/ember-cli-moment-shim/issues/121'));
+        case 'subset':
+        case '2012-2022':
+        case '2010-2020':
+          timezonePath = 'builds/moment-timezone-with-data-*.js';
+          timezoneMinPath = 'builds/moment-timezone-with-data-*.min.js';
           break;
         case 'none':
           timezonePath = 'moment-timezone.js';
           timezoneMinPath = 'builds/moment-timezone.min.js';
           break;
         default:
-          throw new Error('ember-moment: Please specify the moment-timezone dataset to include as either "all", "2010-2020", or "none".');
+          throw new Error('ember-moment: Please specify the moment-timezone dataset to include as either "all", "subset", or "none".');
       }
 
       trees.push(rename(new Funnel(momentTimezonePath, {
-        files: [timezonePath]
-      }), function(/*filepath*/) {
+        include: [timezonePath]
+      }), function() {
         return 'moment-timezone/tz.js';
       }));
 
       trees.push(rename(new Funnel(momentTimezonePath, {
-        files: [timezoneMinPath]
-      }), function(/*filepath*/) {
+        include: [timezoneMinPath]
+      }), function() {
         return 'moment-timezone/tz.min.js';
       }));
     }
