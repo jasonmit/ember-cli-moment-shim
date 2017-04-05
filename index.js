@@ -98,7 +98,7 @@ module.exports = {
         }
 
         if (!existsSync(momentPath + '/locale/' + locale + '.js')) {
-          console.log(chalk.red('ember-moment: Specified locale `' + locale + '` but could not find in moment/locale.\nVisit https://github.com/moment/moment/tree/master/locale to view the full list of supported locales.'));
+          console.log(chalk.red('ember-cli-moment-shim: Specified locale `' + locale + '` but could not find in moment/locale.\nVisit https://github.com/moment/moment/tree/master/locale to view the full list of supported locales.'));
           return false;
         }
 
@@ -221,7 +221,7 @@ module.exports = {
           timezoneMinPath = 'builds/moment-timezone.min.js';
           break;
         default:
-          throw new Error('ember-moment: Please specify the moment-timezone dataset to include as either "all", "subset", or "none".');
+          throw new Error('ember-cli-moment-shim: Please specify the moment-timezone dataset to include as either "all", "subset", or "none".');
       }
 
       trees.push(rename(funnel(momentTimezonePath, {
