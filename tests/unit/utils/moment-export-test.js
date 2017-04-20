@@ -18,6 +18,10 @@ test('moment() instanceof moment', (assert) => {
   assert.equal(moment() instanceof moment, true);
 });
 
+test('moment has `updateLocale`', (assert) => {
+  assert.equal(typeof moment.updateLocale, 'function');
+});
+
 test('moment compare functions property', (assert) => {
   const instanceA = moment(0);
   const instanceB = moment(10000);
