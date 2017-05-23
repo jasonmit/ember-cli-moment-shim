@@ -7,11 +7,12 @@ const funnel = require('broccoli-funnel');
 const existsSync = require('exists-sync');
 const chalk = require('chalk');
 const path = require('path');
+const fs = require('fs');
 
 // Checks to see whether this build is targeting FastBoot. Note that we cannot
 // check this at boot time--the environment variable is only set once the build
 // has started, which happens after this file is evaluated.
-function isFastBoot() {
+function legacyIsFastboot() {
   return process.env.EMBER_CLI_FASTBOOT === 'true';
 }
 
@@ -29,7 +30,7 @@ module.exports = {
     this.app = app;
     this.momentOptions = this.getConfig();
 
-    if (isFastBoot()) {
+    if (legacyIsFastboot()) {
       this.importFastBootDependencies(app);
     } else {
       this.importBrowserDependencies(app);
@@ -127,10 +128,8 @@ module.exports = {
     return config;
   },
 
-  treeForPublic() {
-    let publicTree = this._super.treeForPublic.apply(this, arguments);
-
-    if (isFastBoot()) {
+  treeForPublic(publicTree) {
+    if (legacyIsFastboot()) {
       return publicTree;
     }
 
@@ -154,10 +153,10 @@ module.exports = {
   },
 
   treeForVendor(vendorTree) {
-    if (isFastBoot()) {
+    if (legacyIsFastboot()) {
       return this.treeForNodeVendor(vendorTree);
     }
-    
+
     return this.treeForBrowserVendor(vendorTree);
   },
 
@@ -185,6 +184,19 @@ module.exports = {
     trees.push(tree);
 
     return mergeTrees(trees);
+  },
+
+  contentFor(type) {
+    if (type === 'app-boot') {
+      let fileName = 'fastboot-moment.js';
+
+      if (this.momentOptions.includeTimezone) {
+        // includes all of moment.js
+        fileName = 'fastboot-moment-timezone.js';
+      }
+
+      return fs.readFileSync(path.join(__dirname, 'assets', fileName), 'utf8');
+    }
   },
 
   treeForBrowserVendor(vendorTree) {
