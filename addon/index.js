@@ -1,7 +1,5 @@
 /* globals self */
 
-import Ember from 'ember';
-
 const moment = self.moment;
 
 function compare(a, b) {
@@ -16,7 +14,7 @@ function compare(a, b) {
   }
 
   throw new Error('Arguments provided to `compare` are not moment objects');
-};
+}
 
 moment.prototype.compare = compare;
 moment.compare = compare;
