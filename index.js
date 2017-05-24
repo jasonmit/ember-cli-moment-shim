@@ -89,6 +89,12 @@ module.exports = {
     }
   },
 
+  config() {
+    return {
+      'ember-cli-moment-shim': this.momentOptions || {}
+    }
+  },
+
   getConfig() {
     let projectConfig = (this.project.config(process.env.EMBER_ENV) || {}).moment || {};
     let momentPath = path.dirname(require.resolve('moment'));
@@ -157,7 +163,7 @@ module.exports = {
     if (isFastBoot()) {
       return this.treeForNodeVendor(vendorTree);
     }
-    
+
     return this.treeForBrowserVendor(vendorTree);
   },
 
@@ -177,7 +183,7 @@ module.exports = {
       fileName = 'fastboot-moment.js';
     }
 
-    let tree = funnel(path.join(__dirname, './assets'), {
+    let tree = funnel(path.join(__dirname, './legacy-assets'), {
       files: [fileName]
     });
 

@@ -1,6 +1,5 @@
-/* globals self */
-
-const moment = self.moment;
+/* globals self, require */
+const moment = self.moment || require('~moment')['default'];
 
 function compare(a, b) {
   if (moment.isMoment(a) && moment.isMoment(b)) {
@@ -20,7 +19,7 @@ moment.prototype.compare = compare;
 moment.compare = compare;
 
 moment.prototype.clone = function clone() {
-  return self.moment(this);
+  return moment(this);
 }
 
 export default moment;
