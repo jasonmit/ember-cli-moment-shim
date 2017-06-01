@@ -1,56 +1,53 @@
+/* globals require, module, process, __dirname */
 'use strict';
 
 const mergeTrees = require('broccoli-merge-trees');
-const rename = require('broccoli-stew').rename;
 const defaults = require('lodash.defaults');
 const funnel = require('broccoli-funnel');
 const existsSync = require('exists-sync');
+const stew = require('broccoli-stew');
 const chalk = require('chalk');
 const path = require('path');
 
-// Checks to see whether this build is targeting FastBoot. Note that we cannot
-// check this at boot time--the environment variable is only set once the build
-// has started, which happens after this file is evaluated.
-function isFastBoot() {
+const rename = stew.rename;
+const map = stew.map;
+
+function isLegacyFastboot() {
   return process.env.EMBER_CLI_FASTBOOT === 'true';
 }
 
 module.exports = {
   name: 'moment',
 
-  included(app) {
+  included() {
     this._super.included.apply(this, arguments);
 
-    // see: https://github.com/ember-cli/ember-cli/issues/3718
-    while (typeof app.import !== 'function' && app.app) {
-      app = app.app;
+    let app = this._findHost();
+    this.momentOptions = this.getConfig();
+    this.fastbootTarget = 'fastboot-moment.js';
+
+    if (this.momentOptions.includeTimezone) {
+      this.fastbootTarget = 'fastboot-moment-timezone.js'
     }
 
-    this.app = app;
-    this.momentOptions = this.getConfig();
-
-    if (isFastBoot()) {
-      this.importFastBootDependencies(app);
+    if (isLegacyFastboot()) {
+      this.importLegacyFastBootDependencies(app);
     } else {
       this.importBrowserDependencies(app);
     }
-
-    return app;
   },
 
-  importFastBootDependencies(app) {
-    if (arguments.length < 1) {
-      throw new Error('Application instance must be passed to import');
-    }
+  updateFastBootManifest(manifest) {
+    manifest.vendorFiles.push('moment/' + this.fastbootTarget);
 
+    return manifest;
+  },
+
+  importLegacyFastBootDependencies(app) {
     app.import(this.treePaths.vendor + '/fastboot-moment.js');
   },
 
   importBrowserDependencies(app) {
-    if (arguments.length < 1) {
-      throw new Error('Application instance must be passed to import');
-    }
-
     let vendor = this.treePaths.vendor;
     let options = this.momentOptions;
 
@@ -130,7 +127,7 @@ module.exports = {
   treeForPublic() {
     let publicTree = this._super.treeForPublic.apply(this, arguments);
 
-    if (isFastBoot()) {
+    if (isLegacyFastboot()) {
       return publicTree;
     }
 
@@ -154,31 +151,22 @@ module.exports = {
   },
 
   treeForVendor(vendorTree) {
-    if (isFastBoot()) {
-      return this.treeForNodeVendor(vendorTree);
+    if (isLegacyFastboot()) {
+      return this.legacyTreeForFastBootVendor(vendorTree);
     }
-    
+
     return this.treeForBrowserVendor(vendorTree);
   },
 
-  treeForNodeVendor(vendorTree) {
+  legacyTreeForFastBootVendor(vendorTree) {
     let trees = [];
-    let options = this.momentOptions;
 
     if (vendorTree) {
       trees.push(vendorTree);
     }
 
-    let fileName;
-    if (options.includeTimezone) {
-      // includes all of moment.js
-      fileName = 'fastboot-moment-timezone.js';
-    } else {
-      fileName = 'fastboot-moment.js';
-    }
-
-    let tree = funnel(path.join(__dirname, './assets'), {
-      files: [fileName]
+    let tree = funnel(path.join(__dirname, './public'), {
+      files: [this.fastbootTarget]
     });
 
     tree = rename(tree, () => 'fastboot-moment.js');
@@ -260,6 +248,6 @@ module.exports = {
       );
     }
 
-    return mergeTrees(trees);
+    return map(mergeTrees(trees), (content) => `if (typeof FastBoot === 'undefined') { ${content} }`);
   }
 };
