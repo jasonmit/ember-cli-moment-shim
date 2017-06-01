@@ -19,15 +19,10 @@ function isLegacyFastboot() {
 module.exports = {
   name: 'moment',
 
-  included(app) {
+  included() {
     this._super.included.apply(this, arguments);
 
-    // see: https://github.com/ember-cli/ember-cli/issues/3718
-    while (typeof app.import !== 'function' && app.app) {
-      app = app.app;
-    }
-
-    this.app = app;
+    let app = this._findHost();
     this.momentOptions = this.getConfig();
     this.fastbootTarget = 'fastboot-moment.js';
 
