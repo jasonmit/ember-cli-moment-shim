@@ -166,7 +166,7 @@ module.exports = {
       trees.push(vendorTree);
     }
 
-    let tree = funnel(path.join(__dirname, './public'), {
+    let tree = funnel(new UnwatchedDir(path.join(__dirname, './public')), {
       files: [this.fastbootTarget]
     });
 
