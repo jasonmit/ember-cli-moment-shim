@@ -1,6 +1,7 @@
 /* globals require, module, process, __dirname */
 'use strict';
 
+const UnwatchedDir = require('broccoli-source').UnwatchedDir;
 const mergeTrees = require('broccoli-merge-trees');
 const defaults = require('lodash.defaults');
 const funnel = require('broccoli-funnel');
@@ -140,7 +141,7 @@ module.exports = {
 
     if (options.localeOutputPath) {
       trees.push(
-        funnel(options.momentPath, {
+        funnel(new UnwatchedDir(options.momentPath), {
           srcDir: 'locale',
           destDir: options.localeOutputPath
         })
@@ -184,7 +185,7 @@ module.exports = {
     }
 
     trees.push(
-      funnel(options.momentPath, {
+      funnel(new UnwatchedDir(options.momentPath), {
         destDir: 'moment',
         include: [new RegExp(/\.js$/)],
         exclude: ['tests', 'ender', 'package'].map(key => new RegExp(key + '\.js$'))
@@ -192,7 +193,7 @@ module.exports = {
     );
 
     if (Array.isArray(options.includeLocales) && options.includeLocales.length) {
-      let localeTree = funnel(options.momentPath, {
+      let localeTree = funnel(new UnwatchedDir(options.momentPath), {
         srcDir: 'locale',
         destDir: 'moment/locales',
         include: options.includeLocales.map(locale => new RegExp(locale + '.js$'))
@@ -202,7 +203,6 @@ module.exports = {
     }
 
     if (options.includeTimezone) {
-      let momentTimezonePath = path.dirname(require.resolve('moment-timezone'));
       let timezonePath;
       let timezoneMinPath;
 
@@ -233,16 +233,18 @@ module.exports = {
           );
       }
 
+      const timezoneDir = new UnwatchedDir(path.dirname(require.resolve('moment-timezone')));
+
       trees.push(
         rename(
-          funnel(momentTimezonePath, { include: [timezonePath] }),
+          funnel(timezoneDir, { include: [timezonePath] }),
           () => 'moment-timezone/tz.js'
         )
       );
 
       trees.push(
         rename(
-          funnel(momentTimezonePath, { include: [timezoneMinPath] }),
+          funnel(timezoneDir, { include: [timezoneMinPath] }),
           () => 'moment-timezone/tz.min.js'
         )
       );
