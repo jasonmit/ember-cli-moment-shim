@@ -4,7 +4,7 @@
 [![Ember Observer Score](http://emberobserver.com/badges/ember-cli-moment-shim.svg)](http://emberobserver.com/addons/ember-cli-moment-shim)
 [![Ember badge][ember-badge]][embadge]
 
-ES6 accessible module for momentjs within your Ember applications.
+ember-cli ES6 module shim for [momentjs](https://momentjs.com) and [moment timezone](https://momentjs.com/timezone/) within your Ember applications.  It will also conditionally bundle in specific locale/timezone data for those concerned about payload size.
 
 ## Usage
 
