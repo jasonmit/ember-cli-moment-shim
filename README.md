@@ -17,7 +17,7 @@ import moment from 'moment';
 ## Features
 
 * ES6 accessible module for moment
-* Convient way to bring in locales & timezones through configuration
+* Trim your build sizes by bundling locales & timezones data through simple configuration
 * FastBoot support
 
 ## Upgrading
