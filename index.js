@@ -11,7 +11,6 @@ const existsSync = require('exists-sync');
 const stew = require('broccoli-stew');
 const chalk = require('chalk');
 const path = require('path');
-
 const rename = stew.rename;
 const map = stew.map;
 
@@ -24,19 +23,17 @@ module.exports = {
 
   included() {
     this._super.included.apply(this, arguments);
-
-    let app = this._findHost();
-    this.momentOptions = this.getConfig();
+    this._options = this.getOptions();
     this.fastbootTarget = 'fastboot-moment.js';
 
-    if (this.momentOptions.includeTimezone) {
+    if (this._options.includeTimezone) {
       this.fastbootTarget = 'fastboot-moment-timezone.js'
     }
 
     if (isLegacyFastboot()) {
-      this.importLegacyFastBootDependencies(app);
+      this.importLegacyFastBootDependencies();
     } else {
-      this.importBrowserDependencies(app);
+      this.importBrowserDependencies();
     }
   },
 
@@ -46,16 +43,16 @@ module.exports = {
     return manifest;
   },
 
-  importLegacyFastBootDependencies(app) {
-    app.import(this.treePaths.vendor + '/fastboot-moment.js');
+  importLegacyFastBootDependencies() {
+    this.import(this.treePaths.vendor + '/fastboot-moment.js');
   },
 
-  importBrowserDependencies(app) {
+  importBrowserDependencies() {
     let vendor = this.treePaths.vendor;
-    let options = this.momentOptions;
+    let options = this._options;
 
     if (options.includeTimezone) {
-      app.import(
+      this.import(
         {
           development: vendor + '/moment-timezone/tz.js',
           production: vendor + '/moment-timezone/tz.min.js'
@@ -65,7 +62,7 @@ module.exports = {
     }
 
     if (typeof options.includeLocales === 'boolean' && options.includeLocales) {
-      app.import(
+      this.import(
         {
           development: vendor + '/moment/min/moment-with-locales.js',
           production: vendor + '/moment/min/moment-with-locales.min.js'
@@ -75,11 +72,11 @@ module.exports = {
     } else {
       if (Array.isArray(options.includeLocales)) {
         options.includeLocales.forEach(locale => {
-          app.import(vendor + '/moment/locales/' + locale + '.js', { prepend: true });
+          this.import(vendor + '/moment/locales/' + locale + '.js', { prepend: true });
         });
       }
 
-      app.import(
+      this.import(
         {
           development: vendor + '/moment/moment.js',
           production: vendor + '/moment/min/moment.min.js'
@@ -89,7 +86,7 @@ module.exports = {
     }
   },
 
-  getConfig() {
+  getOptions() {
     let projectConfig = (this.project.config(process.env.EMBER_ENV) || {}).moment || {};
     let momentPath = path.dirname(require.resolve('moment'));
 
@@ -134,7 +131,7 @@ module.exports = {
       return publicTree;
     }
 
-    let options = this.momentOptions;
+    let options = this._options;
     let trees = [];
 
     if (publicTree) {
@@ -180,7 +177,7 @@ module.exports = {
 
   treeForBrowserVendor(vendorTree) {
     let trees = [];
-    let options = this.momentOptions;
+    let options = this._options;
 
     if (vendorTree) {
       trees.push(vendorTree);
