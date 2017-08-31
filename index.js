@@ -1,4 +1,6 @@
 /* globals require, module, process, __dirname */
+/* eslint no-fallthrough: 0, no-duplicate-case: 0 */
+
 'use strict';
 
 const UnwatchedDir = require('broccoli-source').UnwatchedDir;
@@ -108,7 +110,7 @@ module.exports = {
           }
 
           if (!existsSync(momentPath + '/locale/' + locale + '.js')) {
-            console.log(
+            this.ui.writeLine(
               chalk.red(
                 'ember-cli-moment-shim: Specified locale `' +
                   locale +
