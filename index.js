@@ -11,6 +11,7 @@ const existsSync = require('exists-sync');
 const stew = require('broccoli-stew');
 const chalk = require('chalk');
 const path = require('path');
+
 const rename = stew.rename;
 const map = stew.map;
 
@@ -26,6 +27,7 @@ module.exports = {
       this.fastbootTarget = 'fastboot-moment-timezone.js'
     }
 
+    this.momentNode = new UnwatchedDir(this._options.momentPath);
     this.importDependencies();
   },
 
@@ -36,14 +38,13 @@ module.exports = {
   },
 
   importDependencies() {
-    let vendor = this.treePaths.vendor;
     let options = this._options;
 
     if (options.includeTimezone) {
       this.import(
         {
-          development: vendor + '/moment-timezone/tz.js',
-          production: vendor + '/moment-timezone/tz.min.js'
+          development: 'vendor/moment-timezone/tz.js',
+          production: 'vendor/moment-timezone/tz.min.js'
         },
         { prepend: true }
       );
@@ -52,22 +53,22 @@ module.exports = {
     if (typeof options.includeLocales === 'boolean' && options.includeLocales) {
       this.import(
         {
-          development: vendor + '/moment/min/moment-with-locales.js',
-          production: vendor + '/moment/min/moment-with-locales.min.js'
+          development: 'vendor/moment/min/moment-with-locales.js',
+          production: 'vendor/moment/min/moment-with-locales.min.js'
         },
         { prepend: true }
       );
     } else {
       if (Array.isArray(options.includeLocales)) {
         options.includeLocales.forEach(locale => {
-          this.import(vendor + '/moment/locales/' + locale + '.js', { prepend: true });
+          this.import('vendor/moment/locales/' + locale + '.js', { prepend: true });
         });
       }
 
       this.import(
         {
-          development: vendor + '/moment/moment.js',
-          production: vendor + '/moment/min/moment.min.js'
+          development: 'vendor/moment/moment.js',
+          production: 'vendor/moment/min/moment.min.js'
         },
         { prepend: true }
       );
@@ -77,7 +78,6 @@ module.exports = {
   getOptions() {
     let projectConfig = (this.project.config(process.env.EMBER_ENV) || {}).moment || {};
     let momentPath = path.dirname(require.resolve('moment'));
-
     let config = defaults(projectConfig, {
       momentPath: momentPath,
       includeTimezone: null,
@@ -123,7 +123,7 @@ module.exports = {
 
     if (options.localeOutputPath) {
       trees.push(
-        funnel(new UnwatchedDir(options.momentPath), {
+        funnel(this.momentNode, {
           srcDir: 'locale',
           destDir: options.localeOutputPath
         })
@@ -134,10 +134,6 @@ module.exports = {
   },
 
   treeForVendor(vendorTree) {
-    return this.treeForBrowserVendor(vendorTree);
-  },
-
-  treeForBrowserVendor(vendorTree) {
     let trees = [];
     let options = this._options;
 
@@ -146,7 +142,7 @@ module.exports = {
     }
 
     trees.push(
-      funnel(new UnwatchedDir(options.momentPath), {
+      funnel(this.momentNode, {
         destDir: 'moment',
         include: [new RegExp(/\.js$/)],
         exclude: ['tests', 'ender', 'package'].map(key => new RegExp(key + '\.js$'))
@@ -154,10 +150,10 @@ module.exports = {
     );
 
     if (Array.isArray(options.includeLocales) && options.includeLocales.length) {
-      let localeTree = funnel(new UnwatchedDir(options.momentPath), {
+      let localeTree = funnel(this.momentNode, {
         srcDir: 'locale',
         destDir: 'moment/locales',
-        include: options.includeLocales.map(locale => new RegExp(locale + '.js$'))
+        include: options.includeLocales.map(locale => new RegExp(locale + '\.js$'))
       });
 
       trees.push(localeTree);
@@ -194,18 +190,18 @@ module.exports = {
           );
       }
 
-      const timezoneDir = new UnwatchedDir(path.dirname(require.resolve('moment-timezone')));
+      const timezoneNode = new UnwatchedDir(path.dirname(require.resolve('moment-timezone')));
 
       trees.push(
         rename(
-          funnel(timezoneDir, { include: [timezonePath] }),
+          funnel(timezoneNode, { include: [timezonePath] }),
           () => 'moment-timezone/tz.js'
         )
       );
 
       trees.push(
         rename(
-          funnel(timezoneDir, { include: [timezoneMinPath] }),
+          funnel(timezoneNode, { include: [timezoneMinPath] }),
           () => 'moment-timezone/tz.min.js'
         )
       );
