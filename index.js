@@ -1,4 +1,4 @@
-/* globals require, module, process, __dirname */
+/* globals require, module, process */
 /* eslint no-fallthrough: 0, no-duplicate-case: 0 */
 
 'use strict';
@@ -14,10 +14,6 @@ const path = require('path');
 const rename = stew.rename;
 const map = stew.map;
 
-function isLegacyFastboot() {
-  return process.env.EMBER_CLI_FASTBOOT === 'true';
-}
-
 module.exports = {
   name: 'moment',
 
@@ -30,11 +26,7 @@ module.exports = {
       this.fastbootTarget = 'fastboot-moment-timezone.js'
     }
 
-    if (isLegacyFastboot()) {
-      this.importLegacyFastBootDependencies();
-    } else {
-      this.importBrowserDependencies();
-    }
+    this.importDependencies();
   },
 
   updateFastBootManifest(manifest) {
@@ -43,11 +35,7 @@ module.exports = {
     return manifest;
   },
 
-  importLegacyFastBootDependencies() {
-    this.import(this.treePaths.vendor + '/fastboot-moment.js');
-  },
-
-  importBrowserDependencies() {
+  importDependencies() {
     let vendor = this.treePaths.vendor;
     let options = this._options;
 
@@ -126,11 +114,6 @@ module.exports = {
 
   treeForPublic() {
     let publicTree = this._super.treeForPublic.apply(this, arguments);
-
-    if (isLegacyFastboot()) {
-      return publicTree;
-    }
-
     let options = this._options;
     let trees = [];
 
@@ -151,28 +134,7 @@ module.exports = {
   },
 
   treeForVendor(vendorTree) {
-    if (isLegacyFastboot()) {
-      return this.legacyTreeForFastBootVendor(vendorTree);
-    }
-
     return this.treeForBrowserVendor(vendorTree);
-  },
-
-  legacyTreeForFastBootVendor(vendorTree) {
-    let trees = [];
-
-    if (vendorTree) {
-      trees.push(vendorTree);
-    }
-
-    let tree = funnel(new UnwatchedDir(path.join(__dirname, './public')), {
-      files: [this.fastbootTarget]
-    });
-
-    tree = rename(tree, () => 'fastboot-moment.js');
-    trees.push(tree);
-
-    return mergeTrees(trees);
   },
 
   treeForBrowserVendor(vendorTree) {
