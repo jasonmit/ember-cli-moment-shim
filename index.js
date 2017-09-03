@@ -21,18 +21,18 @@ module.exports = {
   included() {
     this._super.included.apply(this, arguments);
     this._options = this.getOptions();
-    this.fastbootTarget = 'fastboot-moment.js';
-
-    if (this._options.includeTimezone) {
-      this.fastbootTarget = 'fastboot-moment-timezone.js'
-    }
-
     this.momentNode = new UnwatchedDir(this._options.momentPath);
     this.importDependencies();
   },
 
   updateFastBootManifest(manifest) {
-    manifest.vendorFiles.push('moment/' + this.fastbootTarget);
+    let target = 'fastboot-moment.js';
+
+    if (this._options.includeTimezone) {
+      target = 'fastboot-moment-timezone.js'
+    }
+
+    manifest.vendorFiles.push('moment/' + target);
 
     return manifest;
   },
