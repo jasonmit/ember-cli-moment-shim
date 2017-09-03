@@ -1,6 +1,4 @@
-/* globals self */
-
-const moment = self.moment;
+import moment from './lib';
 
 function compare(a, b) {
   if (moment.isMoment(a) && moment.isMoment(b)) {
@@ -20,7 +18,7 @@ moment.prototype.compare = compare;
 moment.compare = compare;
 
 moment.prototype.clone = function clone() {
-  return self.moment(this);
+  return moment(this);
 }
 
 export default moment;
