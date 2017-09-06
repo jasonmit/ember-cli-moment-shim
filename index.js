@@ -113,11 +113,12 @@ module.exports = {
   },
 
   treeForPublic() {
+    let hasFastBoot = this.project.addons.some(addon => addon.name === 'ember-cli-fastboot');
     let publicTree = this._super.treeForPublic.apply(this, arguments);
     let options = this._options;
     let trees = [];
 
-    if (publicTree) {
+    if (publicTree && hasFastBoot) {
       trees.push(publicTree);
     }
 
