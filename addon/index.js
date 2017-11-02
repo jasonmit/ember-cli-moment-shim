@@ -84,4 +84,8 @@ moment.prototype.copy = function copy(deep) {
 
 const augmentedMoment = createAugmentedMomentFrom(moment);
 
+['utc', 'unix'].forEach((methodName) => {
+  augmentedMoment[methodName] = createAugmentedMomentFrom(moment[methodName]);
+});
+
 export default augmentedMoment;
