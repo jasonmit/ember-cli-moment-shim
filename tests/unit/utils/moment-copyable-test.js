@@ -23,6 +23,20 @@ test('moment()\'s copy implements Copyable mixin and "copy" fn exists', (assert)
   assert.equal(typeof instanceCopy.copy, 'function');
 })
 
+test('moment.unix() implements Copyable mixin and "copy" fn exists', (assert) => {
+  const instance = moment.unix();
+
+  assert.ok(Ember.Copyable.detect(instance));
+  assert.equal(typeof instance.copy, 'function');
+});
+
+test('moment.utc() implements Copyable mixin and "copy" fn exists', (assert) => {
+  const instance = moment.utc();
+
+  assert.ok(Ember.Copyable.detect(instance));
+  assert.equal(typeof instance.copy, 'function');
+});
+
 test('Copy a moment instance and modify it', (assert) => {
   const instance = moment();
   const instanceCopy = Ember.copy(instance);
