@@ -20,10 +20,6 @@ import moment from 'moment';
 * Trim your build sizes by bundling locales & timezones data through simple configuration
 * FastBoot support
 
-## Upgrading
-
-Be sure to rerun the default blueprint with `ember g ember-cli-moment-shim` if upgrading by bumping the version number in package.json.
-
 ## Enabling moment-timezone
 
 ```js
