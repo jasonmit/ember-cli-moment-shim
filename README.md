@@ -17,7 +17,7 @@ import moment from 'moment';
 ## Features
 
 * ES6 accessible module for moment
-* Trim your build sizes by bundling locales & timezones data through simple configuration
+* Trim your build sizes by bundling locale & timezone data through simple configuration
 * FastBoot support
 
 ## Enabling moment-timezone
@@ -47,13 +47,13 @@ module.exports = function(environment) {
   return {
     moment: {
       // To cherry-pick specific locale support into your application.
-      // Full list of locales: https://github.com/moment/moment/tree/2.10.3/locale
+      // Full list of locales: https://github.com/moment/moment/tree/master/locale
       includeLocales: ['es', 'fr-ca']
     }
   };
 ```
 
-*NOTE: English is bundled automatically, not need to add `en` in `includeLocales`*
+*NOTE: English is bundled automatically – no need to add `en` in `includeLocales`*
 
 ### Include all locales
 
@@ -81,7 +81,7 @@ export default Ember.Route.extend({
 });
 ```
 
-### Write all the locales to a folder relative to `dist`
+### Write all locales to a folder that is relative to `dist`
 
 ```js
 // config.environment.js
@@ -95,7 +95,7 @@ module.exports = function(environment) {
   };
 ```
 
-Feature set of i18n support within moment can be found here:  http://momentjs.com/docs/#/i18n/
+The feature set for i18n support within moment can be found here:  http://momentjs.com/docs/#/i18n/
 
 ## License
 
