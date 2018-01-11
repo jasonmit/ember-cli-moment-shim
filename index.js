@@ -26,9 +26,8 @@ module.exports = {
   },
   
   findModulePath(moduleName) {
-    let basedir = this.project.root;
-
     try {
+      let basedir = this.project.root;
       let resolve = require('resolve');
 
       return path.dirname(resolve.sync(moduleName, { basedir: basedir }));
