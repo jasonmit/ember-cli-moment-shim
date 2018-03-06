@@ -35,7 +35,7 @@
     "ember-cli-babel": "^6.8.2",
     "ember-cli-import-polyfill": "^0.2.0",
     "exists-sync": "^0.0.4",
-    "moment": "^2.18.1",
+    "moment": "^2.19.3",
     "moment-timezone": "^0.5.13"
   },
   "devDependencies": {
