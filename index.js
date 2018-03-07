@@ -8,7 +8,6 @@ const mergeTrees = require('broccoli-merge-trees');
 const funnel = require('broccoli-funnel');
 const existsSync = require('exists-sync');
 const stew = require('broccoli-stew');
-const chalk = require('chalk');
 const path = require('path');
 
 const rename = stew.rename;
@@ -26,11 +25,10 @@ module.exports = {
 
   findModulePath(moduleName) {
     try {
+      let basedir = this.project.root;
       let resolve = require('resolve');
 
-      return path.dirname(
-        resolve.sync(moduleName, { basedir: this.project.root })
-      );
+      return path.dirname(resolve.sync(moduleName, { basedir: basedir }));
     } catch (_) {
       try {
         return path.dirname(require.resolve(moduleName));
@@ -48,11 +46,13 @@ module.exports = {
   },
 
   updateFastBootManifest(manifest) {
+    let target = 'fastboot-moment.js';
+
     if (this.context.includeTimezone) {
-      manifest.vendorFiles.push('moment/fastboot-moment-timezone.js');
-    } else {
-      manifest.vendorFiles.push('moment/fastboot-moment.js');
+      target = 'fastboot-moment-timezone.js';
     }
+
+    manifest.vendorFiles.push('moment/' + target);
 
     return manifest;
   },
@@ -79,9 +79,7 @@ module.exports = {
     } else {
       if (this.hasLocales(context)) {
         context.includeLocales.forEach(locale => {
-          this.import('vendor/moment/locales/' + locale + '.js', {
-            prepend: true
-          });
+          this.import('vendor/moment/locales/' + locale + '.js', { prepend: true });
         });
       }
 
@@ -95,8 +93,9 @@ module.exports = {
     }
   },
 
-  writeLine(msg = '', color = 'yellow') {
-    this.ui.writeLine(chalk[color](`ember-cli-moment-shim: ${msg}`));
+  writeLine(msg, color = 'yellow') {
+    let chalk = require('chalk');
+    this.ui.writeLine(chalk[color](msg));
   },
 
   hasLocales(context) {
@@ -104,16 +103,14 @@ module.exports = {
   },
 
   buildContext() {
+    let projectConfig = (this.project.config(process.env.EMBER_ENV) || {}).moment || {};
     let momentPath = this.findModulePath('moment');
-    let config = this.project.config(process.env.EMBER_ENV) || {};
-    let context = Object.assign(
-      {
-        momentPath: momentPath,
-        includeTimezone: null,
-        includeLocales: []
-      },
-      config.moment
-    );
+
+    let context = Object.assign({
+      momentPath: momentPath,
+      includeTimezone: null,
+      includeLocales: []
+    }, projectConfig);
 
     if (this.hasLocales(context)) {
       context.includeLocales = context.includeLocales
@@ -125,15 +122,16 @@ module.exports = {
             .toLowerCase()
         )
         .filter(locale => {
-          /* "en" is included by default.  quietly ignore if user provides */
           if (locale === 'en') {
+            // `en` is included by default.  quietly ignore if user specifies it in the list
             return false;
           }
 
-          if (!existsSync(`${momentPath}/locale/${locale}.js`)) {
+          if (!existsSync(momentPath + '/locale/' + locale + '.js')) {
             this.writeLine(
-              `Specified locale '${locale} but could not find in moment/locale.\n` +
-                `Visit https://github.com/moment/moment/tree/master/locale to view the full list of supported locales.`,
+              'ember-cli-moment-shim: Specified locale `' +
+                locale +
+                '` but could not find in moment/locale.\nVisit https://github.com/moment/moment/tree/master/locale to view the full list of supported locales.',
               'red'
             );
             return false;
@@ -147,9 +145,7 @@ module.exports = {
   },
 
   treeForPublic() {
-    let hasFastBoot = this.project.addons.some(
-      addon => addon.name === 'ember-cli-fastboot'
-    );
+    let hasFastBoot = this.project.addons.some(addon => addon.name === 'ember-cli-fastboot');
     let publicTree = this._super.treeForPublic.apply(this, arguments);
     let context = this.context;
     let trees = [];
@@ -170,25 +166,16 @@ module.exports = {
     return mergeTrees(trees);
   },
 
-  pathsForOptions(context) {
-    switch (context.includeTimezone) {
+  pathsForOptions({ includeTimezone }) {
+    switch (includeTimezone) {
       case 'all':
-        return [
-          'builds/moment-timezone-with-data.js',
-          'builds/moment-timezone-with-data.min.js'
-        ];
+        return ['builds/moment-timezone-with-data.js', 'builds/moment-timezone-with-data.min.js'];
       case '2010-2020':
-        this.writeLine(
-          `"2010-2020" is deprecated, use "subset" within config/environment\n` +
-            `Explanation can be found @ https://github.com/jasonmit/ember-cli-moment-shim/issues/121`
-        );
+        this.writeLine('[ember-cli-moment-shim] "2010-2020" is deprecated, use "subset" within config/environment\nDiscussion: https://github.com/jasonmit/ember-cli-moment-shim/issues/121');
       case 'subset':
       case '2012-2022':
       case '2010-2020':
-        return [
-          'builds/moment-timezone-with-data-*.js',
-          'builds/moment-timezone-with-data-*.min.js'
-        ];
+        return ['builds/moment-timezone-with-data-*.js', 'builds/moment-timezone-with-data-*.min.js'];
       case 'none':
         return ['moment-timezone.js', 'builds/moment-timezone.min.js'];
       default:
@@ -210,9 +197,7 @@ module.exports = {
       funnel(this.momentNode, {
         destDir: 'moment',
         include: [new RegExp(/\.js$/)],
-        exclude: ['tests', 'ender', 'package'].map(
-          key => new RegExp(key + '.js$')
-        )
+        exclude: ['tests', 'ender', 'package'].map(key => new RegExp(key + '.js$'))
       })
     );
 
@@ -220,9 +205,7 @@ module.exports = {
       let localeTree = funnel(this.momentNode, {
         srcDir: 'locale',
         destDir: 'moment/locales',
-        include: context.includeLocales.map(
-          locale => new RegExp(locale + '.js$')
-        )
+        include: context.includeLocales.map(locale => new RegExp(locale + '.js$'))
       });
 
       trees.push(localeTree);
@@ -230,28 +213,13 @@ module.exports = {
 
     if (context.includeTimezone) {
       let [timezonePath, timezoneMinPath] = this.pathsForOptions(context);
-      let timezoneNode = new UnwatchedDir(
-        this.findModulePath('moment-timezone')
-      );
+      let timezoneNode = new UnwatchedDir(this.findModulePath('moment-timezone'));
 
-      trees.push(
-        rename(
-          funnel(timezoneNode, { include: [timezonePath] }),
-          () => 'moment-timezone/tz.js'
-        )
-      );
+      trees.push(rename(funnel(timezoneNode, { include: [timezonePath] }), () => 'moment-timezone/tz.js'));
 
-      trees.push(
-        rename(
-          funnel(timezoneNode, { include: [timezoneMinPath] }),
-          () => 'moment-timezone/tz.min.js'
-        )
-      );
+      trees.push(rename(funnel(timezoneNode, { include: [timezoneMinPath] }), () => 'moment-timezone/tz.min.js'));
     }
 
-    return map(
-      mergeTrees(trees),
-      content => `if (typeof FastBoot === 'undefined') { ${content} }`
-    );
+    return map(mergeTrees(trees), content => `if (typeof FastBoot === 'undefined') { ${content} }`);
   }
 };
