@@ -133,29 +133,6 @@ module.exports = {
 
     return mergeTrees(trees);
   },
-  
-  pathsForOptions({ includeTimezone }) {
-    switch (includeTimezone) {
-        case 'all':
-          return ['builds/moment-timezone-with-data.js', 'builds/moment-timezone-with-data.min.js'];
-        case '2010-2020':
-          this.ui.writeLine(
-            chalk.yellow(
-              '[ember-cli-moment-shim] "2010-2020" is deprecated, use "subset" within config/environment\nDiscussion: https://github.com/jasonmit/ember-cli-moment-shim/issues/121'
-            )
-          );
-        case 'subset':
-        case '2012-2022':
-        case '2010-2020':
-          return ['builds/moment-timezone-with-data-*.js', 'builds/moment-timezone-with-data-*.min.js'];
-        case 'none':
-          return ['moment-timezone.js', 'builds/moment-timezone.min.js'];
-        default:
-          throw new Error(
-            'ember-cli-moment-shim: Please specify the moment-timezone dataset to include as either "all", "subset", or "none".'
-          );
-      }
-  },
 
   treeForVendor(vendorTree) {
     let trees = [];
@@ -184,8 +161,37 @@ module.exports = {
     }
 
     if (options.includeTimezone) {
-      let [ timezonePath, timezoneMinPath ] = this.pathsForOptions(options);
-      let timezoneNode = new UnwatchedDir(path.dirname(require.resolve('moment-timezone')));
+      let timezonePath;
+      let timezoneMinPath;
+
+      switch (options.includeTimezone) {
+        case 'all':
+          timezonePath = 'builds/moment-timezone-with-data.js';
+          timezoneMinPath = 'builds/moment-timezone-with-data.min.js';
+          break;
+        case '2010-2020':
+          this.ui.writeLine(
+            chalk.yellow(
+              '[ember-cli-moment-shim] "2010-2020" is deprecated, use "subset" within config/environment\nDiscussion: https://github.com/jasonmit/ember-cli-moment-shim/issues/121'
+            )
+          );
+        case 'subset':
+        case '2012-2022':
+        case '2010-2020':
+          timezonePath = 'builds/moment-timezone-with-data-*.js';
+          timezoneMinPath = 'builds/moment-timezone-with-data-*.min.js';
+          break;
+        case 'none':
+          timezonePath = 'moment-timezone.js';
+          timezoneMinPath = 'builds/moment-timezone.min.js';
+          break;
+        default:
+          throw new Error(
+            'ember-cli-moment-shim: Please specify the moment-timezone dataset to include as either "all", "subset", or "none".'
+          );
+      }
+
+      const timezoneNode = new UnwatchedDir(path.dirname(require.resolve('moment-timezone')));
 
       trees.push(
         rename(
