@@ -24,27 +24,6 @@ module.exports = {
     this.momentNode = new UnwatchedDir(this._options.momentPath);
     this.importDependencies();
   },
-  
-  findModulePath(moduleName) {
-    let basedir = this.project.root;
-
-    try {
-      let resolve = require('resolve');
-
-      return path.dirname(resolve.sync(moduleName, { basedir: basedir }));
-    } catch(_) {
-      try {
-        return path.dirname(require.resolve(moduleName));
-      } catch(e) {
-        if (e.code === 'MODULE_NOT_FOUND') {
-          this.ui.writeLine(`ember-cli-moment-shim: ${moduleName} not installed.  Try resolving via "npm install ${moduleName}".`)
-          return;
-        }
-
-        throw e;
-      }
-    }
-  },
 
   updateFastBootManifest(manifest) {
     let target = 'fastboot-moment.js';
@@ -98,7 +77,7 @@ module.exports = {
 
   getOptions() {
     let projectConfig = (this.project.config(process.env.EMBER_ENV) || {}).moment || {};
-    let momentPath = path.dirname(this.findModulePath('moment'));
+    let momentPath = path.dirname(require.resolve('moment'));
     let config = defaults(projectConfig, {
       momentPath: momentPath,
       includeTimezone: null,
@@ -206,7 +185,7 @@ module.exports = {
 
     if (options.includeTimezone) {
       let [ timezonePath, timezoneMinPath ] = this.pathsForOptions(options);
-      let timezoneNode = new UnwatchedDir(path.dirname(this.findModulePath('moment-timezone')));
+      let timezoneNode = new UnwatchedDir(path.dirname(require.resolve('moment-timezone')));
 
       trees.push(
         rename(
