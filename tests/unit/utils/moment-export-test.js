@@ -1,6 +1,8 @@
+import { A } from '@ember/array';
+import { sort } from '@ember/object/computed';
+import EmberObject from '@ember/object';
 import { test, module } from 'qunit';
 import moment from 'moment';
-import Ember from 'ember';
 
 module('Unit | moment exports');
 
@@ -53,14 +55,17 @@ test('moment().clone is an instance function', (assert) => {
 });
 
 test('ember computed sort can work with exported moment', (assert) => {
-  const ObjClass = Ember.Object.extend({
-    datesSortParam: ['date:asc'],
-    sortedDateContainers: Ember.computed.sort('dateContainers', function(a, b) {
+  const ObjClass = EmberObject.extend({
+    init() {
+      this._super();
+      this.datesSortParam = ['date:asc'];
+    },
+    sortedDateContainers: sort('dateContainers', function(a, b) {
       return moment.compare(a.date, b.date);
     })
   });
 
-  const obj = ObjClass.create({dateContainers: Ember.A([
+  const obj = ObjClass.create({dateContainers: A([
     { date: moment(20000) },
     { date: moment(0) },
     { date: moment(10000) }
