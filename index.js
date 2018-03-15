@@ -43,20 +43,33 @@ function getLocaleDefinitionModules(requestingTree) {
   }
 
   if (singleModule) {
+    // Turn the locales into a hash key/value pairs.
+    const keyValuePairs = map(localeTree, function(content, relativePath) {
+      const locale = path.basename(relativePath, '.js');
+      return `'${locale}': function() { ${content} },`;
+    });
+
+    // This function becomes defineLocale(locale);
     const header = `
-      export default function() {
+      export default function(locale) {
         if (typeof FastBoot === 'undefined') {
+          const locales = {
     `;
     const footer = `
+          };
+
+          if (locales[locale]) {
+            locales[locale]();
+          }
         }
       }
     `;
 
-    const concatenatedDefinitionIIFEs = concat(localeTree, {
+    const concatenatedDefinitionIIFEs = concat(keyValuePairs, {
       header,
       footer,
       inputFiles: ['**/*'],
-      outputFile: 'ember-cli-moment-shim/define-locales.js'
+      outputFile: 'ember-cli-moment-shim/define-locale.js'
     });
 
     let babelAddon = this.addons.find(addon => addon.name === 'ember-cli-babel');
