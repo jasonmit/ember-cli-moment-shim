@@ -81,6 +81,60 @@ export default Ember.Route.extend({
 });
 ```
 
+### Single module use
+
+The default behavior for loading moment locales is an IIFE which is added into
+the `vendor.js` file. The consequence of that is that you have no control over
+when that code is run. That code also triggers [setting of the moment locale](https://github.com/moment/moment/blob/f6c7069/src/lib/locale/locales.js#L132),
+which means that at arbitrary times in your application you don't know what the
+locale is.
+
+Included in `ember-cli-moment-shim` is a module that allows you to specify which
+localization you would like to load, and when you would like it invoked. This
+enables you to configure timing based upon application constraints. (With the
+initial state being `en`.)
+
+```js
+// config.environment.js
+module.exports = function(environment) {
+  return {
+    moment: {
+      includeLocales: ['es', 'fr-ca'],
+      singleModule: true
+    }
+  };
+```
+
+```js
+// app/routes/applicaton.js
+import Route from '@ember/routing/route';
+import defineLocale from 'ember-cli-moment-shim/define-locale';
+import moment from 'moment';
+import { inject as service } from '@ember/service';
+
+export default Route.extend({
+  moment: service(),
+
+  beforeModel() {
+    const desiredLocale = 'en-us';
+
+    // This adds the configuration for *just* the locale you want.
+    // All locales specified as bundled by `includeLocales` will be available.
+    defineLocale(desiredLocale);
+    
+    // Set the locale:
+    moment.locale(desiredLocale);
+
+    // It is possible for the locale in the `ember-moment`-supplied service to
+    // get out of sync with the locale set in moment itself:
+    // https://github.com/stefanpenner/ember-moment/blob/b8a262b/addon/services/moment.js#L50-L53
+    // If using both the service and ES6 approach be sure to keep those values
+    // consistent.
+    this.get('moment').setLocale(desiredLocale);
+  }
+});
+```
+
 ### Write all locales to a folder that is relative to `dist`
 
 ```js
