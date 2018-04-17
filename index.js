@@ -7,7 +7,7 @@ const UnwatchedDir = require('broccoli-source').UnwatchedDir;
 const mergeTrees = require('broccoli-merge-trees');
 const defaults = require('lodash.defaults');
 const funnel = require('broccoli-funnel');
-const existsSync = require('exists-sync');
+const fs = require('fs');
 const stew = require('broccoli-stew');
 const concat = require('broccoli-concat');
 const chalk = require('chalk');
@@ -170,7 +170,7 @@ module.exports = {
             return false;
           }
 
-          if (!existsSync(momentPath + '/locale/' + locale + '.js')) {
+          if (!fs.existsSync(momentPath + '/locale/' + locale + '.js')) {
             this.ui.writeLine(
               chalk.red(
                 'ember-cli-moment-shim: Specified locale `' +
