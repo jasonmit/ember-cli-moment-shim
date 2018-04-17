@@ -7,11 +7,11 @@ const UnwatchedDir = require('broccoli-source').UnwatchedDir;
 const mergeTrees = require('broccoli-merge-trees');
 const defaults = require('lodash.defaults');
 const funnel = require('broccoli-funnel');
-const fs = require('fs');
-const stew = require('broccoli-stew');
 const concat = require('broccoli-concat');
+const stew = require('broccoli-stew');
 const chalk = require('chalk');
 const path = require('path');
+const fs = require('fs');
 
 const rename = stew.rename;
 const map = stew.map;
