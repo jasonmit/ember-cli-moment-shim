@@ -7,7 +7,6 @@ const UnwatchedDir = require('broccoli-source').UnwatchedDir;
 const mergeTrees = require('broccoli-merge-trees');
 const defaults = require('lodash.defaults');
 const funnel = require('broccoli-funnel');
-const concat = require('broccoli-concat');
 const stew = require('broccoli-stew');
 const chalk = require('chalk');
 const path = require('path');
@@ -15,72 +14,6 @@ const fs = require('fs');
 
 const rename = stew.rename;
 const map = stew.map;
-
-function getLocaleDefinitionModules(requestingTree) {
-  let options = this._options;
-  const singleModule = options.singleModule;
-
-  if (requestingTree === 'addon' && !singleModule) {
-    return;
-  }
-
-  if (requestingTree === 'vendor' && singleModule) {
-    return;
-  }
-
-  let localeTree;
-  if (
-    Array.isArray(options.includeLocales) &&
-    options.includeLocales.length
-  ) {
-    localeTree = funnel(this.momentNode, {
-      srcDir: 'locale',
-      destDir: 'moment/locales',
-      include: options.includeLocales.map(
-        locale => new RegExp(locale + '.js$')
-      )
-    });
-  }
-
-  if (singleModule) {
-    // Turn the locales into a hash key/value pairs.
-    const keyValuePairs = map(localeTree, function(content, relativePath) {
-      const locale = path.basename(relativePath, '.js');
-      return `'${locale}': function() { ${content} },`;
-    });
-
-    // This function becomes defineLocale(locale);
-    const header = `
-      export default function(locale) {
-        if (typeof FastBoot === 'undefined') {
-          const locales = {
-    `;
-    const footer = `
-          };
-
-          if (locales[locale]) {
-            locales[locale]();
-          }
-        }
-      }
-    `;
-
-    const concatenatedDefinitionIIFEs = concat(keyValuePairs, {
-      header,
-      footer,
-      inputFiles: ['**/*'],
-      outputFile: 'ember-cli-moment-shim/define-locale.js'
-    });
-
-    let babelAddon = this.addons.find(addon => addon.name === 'ember-cli-babel');
-    return babelAddon.transpileTree(concatenatedDefinitionIIFEs);
-  } else {
-    return map(
-      localeTree,
-      content => `if (typeof FastBoot === 'undefined') { ${content} }`
-    );
-  }
-}
 
 module.exports = {
   name: 'moment',
@@ -126,7 +59,7 @@ module.exports = {
         { prepend: true }
       );
     } else {
-      if (Array.isArray(options.includeLocales) && !options.singleModule) {
+      if (Array.isArray(options.includeLocales)) {
         options.includeLocales.forEach(locale => {
           this.import('vendor/moment/locales/' + locale + '.js', {
             prepend: true
@@ -149,7 +82,6 @@ module.exports = {
       (this.project.config(process.env.EMBER_ENV) || {}).moment || {};
     let momentPath = path.dirname(require.resolve('moment'));
     let config = defaults(projectConfig, {
-      singleModule: false,
       momentPath: momentPath,
       includeTimezone: null,
       includeLocales: []
@@ -212,18 +144,13 @@ module.exports = {
     return mergeTrees(trees);
   },
 
-  treeForAddon() {
-    const superValue = this._super.apply(this, arguments);
-    const definitionModules = getLocaleDefinitionModules.call(this, 'addon');
-    return mergeTrees([superValue, definitionModules].filter(Boolean));
-  },
-
-  treeForVendor() {
+  treeForVendor(vendorTree) {
     let trees = [];
     let options = this._options;
 
-    const superValue = this._super.apply(this, arguments);
-    trees.push(superValue);
+    if (vendorTree) {
+      trees.push(vendorTree);
+    }
 
     trees.push(
       funnel(this.momentNode, {
@@ -234,6 +161,21 @@ module.exports = {
         )
       })
     );
+
+    if (
+      Array.isArray(options.includeLocales) &&
+      options.includeLocales.length
+    ) {
+      let localeTree = funnel(this.momentNode, {
+        srcDir: 'locale',
+        destDir: 'moment/locales',
+        include: options.includeLocales.map(
+          locale => new RegExp(locale + '.js$')
+        )
+      });
+
+      trees.push(localeTree);
+    }
 
     if (options.includeTimezone) {
       let timezonePath;
@@ -285,11 +227,8 @@ module.exports = {
       );
     }
 
-    const definitionModules = getLocaleDefinitionModules.call(this, 'vendor');
-    trees.push(definitionModules);
-
     return map(
-      mergeTrees(trees.filter(Boolean)),
+      mergeTrees(trees),
       content => `if (typeof FastBoot === 'undefined') { ${content} }`
     );
   }
