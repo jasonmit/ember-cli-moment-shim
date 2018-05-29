@@ -1,4 +1,7 @@
-import moment from './lib';
+import _moment from './lib';
+import momentRange from './range';
+
+let moment = momentRange.extendMoment(_moment);
 
 function compare(a, b) {
   if (moment.isMoment(a) && moment.isMoment(b)) {
