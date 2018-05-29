@@ -34,6 +34,10 @@ module.exports = {
 
     manifest.vendorFiles.push('moment/' + target);
 
+    if (this._options.includeRange) {
+      manifest.vendorFiles.push('moment/fastboot-moment-range.js');
+    }
+
     return manifest;
   },
 
@@ -48,6 +52,13 @@ module.exports = {
         },
         { prepend: true }
       );
+    }
+
+    if (options.includeRange) {
+      this.import('node_modules/moment-range/dist/moment-range.js', {
+        exports: { "moment-range": ['default', 'extendMoment', 'DataRange'] },
+        prepend: true
+      });
     }
 
     if (typeof options.includeLocales === 'boolean' && options.includeLocales) {
