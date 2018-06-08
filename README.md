@@ -2,7 +2,6 @@
 [![Build Status](https://travis-ci.org/jasonmit/ember-cli-moment-shim.svg?branch=master)](https://travis-ci.org/jasonmit/ember-cli-moment-shim)
 [![npm Version][npm-badge]][npm]
 [![Ember Observer Score](http://emberobserver.com/badges/ember-cli-moment-shim.svg)](http://emberobserver.com/addons/ember-cli-moment-shim)
-[![Ember badge][ember-badge]][embadge]
 
 ember-cli ES6 module shim for [momentjs](https://momentjs.com) and [moment timezone](https://momentjs.com/timezone/) within your Ember applications.  It will also conditionally bundle in specific locale/timezone data for those concerned about payload size.
 
@@ -17,12 +16,8 @@ import moment from 'moment';
 ## Features
 
 * ES6 accessible module for moment
-* Trim your build sizes by bundling locales & timezones data through simple configuration
+* Trim your build sizes by bundling locale & timezone data through simple configuration
 * FastBoot support
-
-## Upgrading
-
-Be sure to rerun the default blueprint with `ember g ember-cli-moment-shim` if upgrading by bumping the version number in package.json.
 
 ## Enabling moment-timezone
 
@@ -51,13 +46,13 @@ module.exports = function(environment) {
   return {
     moment: {
       // To cherry-pick specific locale support into your application.
-      // Full list of locales: https://github.com/moment/moment/tree/2.10.3/locale
+      // Full list of locales: https://github.com/moment/moment/tree/master/locale
       includeLocales: ['es', 'fr-ca']
     }
   };
 ```
 
-*NOTE: English is bundled automatically, not need to add `en` in `includeLocales`*
+*NOTE: English is bundled automatically – no need to add `en` in `includeLocales`*
 
 ### Include all locales
 
@@ -85,7 +80,7 @@ export default Ember.Route.extend({
 });
 ```
 
-### Write all the locales to a folder relative to `dist`
+### Write all locales to a folder that is relative to `dist`
 
 ```js
 // config.environment.js
@@ -99,13 +94,11 @@ module.exports = function(environment) {
   };
 ```
 
-Feature set of i18n support within moment can be found here:  http://momentjs.com/docs/#/i18n/
+The feature set for i18n support within moment can be found here:  http://momentjs.com/docs/#/i18n/
 
 ## License
 
 ember-cli-moment-shim shims is [MIT Licensed](https://github.com/jasonmit/ember-cli-moment-shim/blob/master/LICENSE.md).
 
-[embadge]: http://embadge.io/
-[ember-badge]: http://embadge.io/v1/badge.svg?start=1.0.0
 [npm]: https://www.npmjs.org/package/ember-cli-moment-shim
 [npm-badge]: https://img.shields.io/npm/v/ember-cli-moment-shim.svg?style=flat-square

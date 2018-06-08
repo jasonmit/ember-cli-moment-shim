@@ -7,10 +7,10 @@ const UnwatchedDir = require('broccoli-source').UnwatchedDir;
 const mergeTrees = require('broccoli-merge-trees');
 const defaults = require('lodash.defaults');
 const funnel = require('broccoli-funnel');
-const existsSync = require('exists-sync');
 const stew = require('broccoli-stew');
 const chalk = require('chalk');
 const path = require('path');
+const fs = require('fs');
 
 const rename = stew.rename;
 const map = stew.map;
@@ -29,7 +29,7 @@ module.exports = {
     let target = 'fastboot-moment.js';
 
     if (this._options.includeTimezone) {
-      target = 'fastboot-moment-timezone.js'
+      target = 'fastboot-moment-timezone.js';
     }
 
     manifest.vendorFiles.push('moment/' + target);
@@ -61,7 +61,9 @@ module.exports = {
     } else {
       if (Array.isArray(options.includeLocales)) {
         options.includeLocales.forEach(locale => {
-          this.import('vendor/moment/locales/' + locale + '.js', { prepend: true });
+          this.import('vendor/moment/locales/' + locale + '.js', {
+            prepend: true
+          });
         });
       }
 
@@ -76,7 +78,8 @@ module.exports = {
   },
 
   getOptions() {
-    let projectConfig = (this.project.config(process.env.EMBER_ENV) || {}).moment || {};
+    let projectConfig =
+      (this.project.config(process.env.EMBER_ENV) || {}).moment || {};
     let momentPath = path.dirname(require.resolve('moment'));
     let config = defaults(projectConfig, {
       momentPath: momentPath,
@@ -87,14 +90,19 @@ module.exports = {
     if (Array.isArray(config.includeLocales)) {
       config.includeLocales = config.includeLocales
         .filter(locale => typeof locale === 'string')
-        .map(locale => locale.replace('.js', '').trim().toLowerCase())
+        .map(locale =>
+          locale
+            .replace('.js', '')
+            .trim()
+            .toLowerCase()
+        )
         .filter(locale => {
           if (locale === 'en') {
             // `en` is included by default.  quietly ignore if user specifies it in the list
             return false;
           }
 
-          if (!existsSync(momentPath + '/locale/' + locale + '.js')) {
+          if (!fs.existsSync(momentPath + '/locale/' + locale + '.js')) {
             this.ui.writeLine(
               chalk.red(
                 'ember-cli-moment-shim: Specified locale `' +
@@ -113,7 +121,9 @@ module.exports = {
   },
 
   treeForPublic() {
-    let hasFastBoot = this.project.addons.some(addon => addon.name === 'ember-cli-fastboot');
+    let hasFastBoot = this.project.addons.some(
+      addon => addon.name === 'ember-cli-fastboot'
+    );
     let publicTree = this._super.treeForPublic.apply(this, arguments);
     let options = this._options;
     let trees = [];
@@ -146,15 +156,22 @@ module.exports = {
       funnel(this.momentNode, {
         destDir: 'moment',
         include: [new RegExp(/\.js$/)],
-        exclude: ['tests', 'ender', 'package'].map(key => new RegExp(key + '\.js$'))
+        exclude: ['tests', 'ender', 'package'].map(
+          key => new RegExp(key + '.js$')
+        )
       })
     );
 
-    if (Array.isArray(options.includeLocales) && options.includeLocales.length) {
+    if (
+      Array.isArray(options.includeLocales) &&
+      options.includeLocales.length
+    ) {
       let localeTree = funnel(this.momentNode, {
         srcDir: 'locale',
         destDir: 'moment/locales',
-        include: options.includeLocales.map(locale => new RegExp(locale + '\.js$'))
+        include: options.includeLocales.map(
+          locale => new RegExp(locale + '.js$')
+        )
       });
 
       trees.push(localeTree);
@@ -191,7 +208,9 @@ module.exports = {
           );
       }
 
-      const timezoneNode = new UnwatchedDir(path.dirname(require.resolve('moment-timezone')));
+      const timezoneNode = new UnwatchedDir(
+        path.dirname(require.resolve('moment-timezone'))
+      );
 
       trees.push(
         rename(
@@ -208,6 +227,9 @@ module.exports = {
       );
     }
 
-    return map(mergeTrees(trees), (content) => `if (typeof FastBoot === 'undefined') { ${content} }`);
+    return map(
+      mergeTrees(trees),
+      content => `if (typeof FastBoot === 'undefined') { ${content} }`
+    );
   }
 };
