@@ -45,7 +45,7 @@ function createAugmentedMomentFrom(fn) {
   const augmentedMoment = function() {
     const m = fn(...arguments);
     const meta = Ember.meta(m);
-    meta.writeMixins(Ember.guidFor(Ember.Copyable), Ember.Copyable);
+    meta.addMixin(Ember.Copyable);
 
     return m;
   }

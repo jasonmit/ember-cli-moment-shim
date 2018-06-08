@@ -1,3 +1,4 @@
+import { copy } from '@ember/object/internals';
 import { test, module } from 'qunit';
 import moment from 'moment';
 import Ember from 'ember';
@@ -17,7 +18,7 @@ test('moment() implements Copyable mixin and "copy" fn exists', (assert) => {
 
 test('moment()\'s copy implements Copyable mixin and "copy" fn exists', (assert) => {
   const instance = moment();
-  const instanceCopy = Ember.copy(instance);
+  const instanceCopy = copy(instance);
 
   assert.ok(Ember.Copyable.detect(instanceCopy));
   assert.equal(typeof instanceCopy.copy, 'function');
@@ -39,7 +40,7 @@ test('moment.utc() implements Copyable mixin and "copy" fn exists', (assert) => 
 
 test('Copy a moment instance and modify it', (assert) => {
   const instance = moment();
-  const instanceCopy = Ember.copy(instance);
+  const instanceCopy = copy(instance);
 
   instanceCopy.add(7, 'd');
 
