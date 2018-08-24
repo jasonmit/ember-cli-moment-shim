@@ -4,19 +4,27 @@
 'use strict';
 
 const UnwatchedDir = require('broccoli-source').UnwatchedDir;
-const mergeTrees = require('broccoli-merge-trees');
+// const mergeTrees = require('broccoli-merge-trees');
 const defaults = require('lodash.defaults');
-const funnel = require('broccoli-funnel');
-const stew = require('broccoli-stew');
+// const funnel = require('broccoli-funnel');
 const chalk = require('chalk');
 const path = require('path');
 const fs = require('fs');
-
-const rename = stew.rename;
-const map = stew.map;
+const webpack = require('webpack');
+const IgnorePlugin = webpack.IgnorePlugin;
+const ContextReplacementPlugin = webpack.ContextReplacementPlugin;
 
 module.exports = {
-  name: 'moment',
+  name: 'ember-cli-moment-shim',
+
+  options: {
+    autoImport: {
+      alias: {},
+      webpack: {
+        plugins: [],
+      },
+    },
+  },
 
   included() {
     this._super.included.apply(this, arguments);
@@ -25,55 +33,42 @@ module.exports = {
     this.importDependencies();
   },
 
-  updateFastBootManifest(manifest) {
-    let target = 'fastboot-moment.js';
+  // updateFastBootManifest(manifest) {
+  //   let target = 'fastboot-moment.js';
 
-    if (this._options.includeTimezone) {
-      target = 'fastboot-moment-timezone.js';
-    }
+  //   if (this._options.includeTimezone) {
+  //     target = 'fastboot-moment-timezone.js';
+  //   }
 
-    manifest.vendorFiles.push('moment/' + target);
+  //   manifest.vendorFiles.push('moment/' + target);
 
-    return manifest;
-  },
+  //   return manifest;
+  // },
 
   importDependencies() {
     let options = this._options;
-
+    const autoImport = this.options.autoImport;
     if (options.includeTimezone) {
-      this.import(
-        {
-          development: 'vendor/moment-timezone/tz.js',
-          production: 'vendor/moment-timezone/tz.min.js'
-        },
-        { prepend: true }
-      );
+      const tzPath = this._getMomentTZImportPath(options.includeTimezone);
+
+      autoImport.alias['moment-timezone'] = tzPath.dev;
+      autoImport.webpack.plugins.push(new IgnorePlugin(/^\.\/data$/, /moment-timezone$/));
     }
 
     if (typeof options.includeLocales === 'boolean' && options.includeLocales) {
-      this.import(
-        {
-          development: 'vendor/moment/min/moment-with-locales.js',
-          production: 'vendor/moment/min/moment-with-locales.min.js'
-        },
-        { prepend: true }
-      );
+      autoImport.alias['moment'] = 'moment/min/moment-with-locales';
+      autoImport.webpack.plugins.push(new IgnorePlugin(/^\.\/locale$/, /moment$/));
     } else {
       if (Array.isArray(options.includeLocales)) {
-        options.includeLocales.forEach(locale => {
-          this.import('vendor/moment/locales/' + locale + '.js', {
-            prepend: true
-          });
+        var regExpPatterns = options.includeLocales.map(function(localeName) {
+            return localeName + '(\\.js)?';
         });
+        const localesRegex = new RegExp('(' + regExpPatterns.join('|') + ')$');
+        autoImport.webpack.plugins.push(new ContextReplacementPlugin(
+          /moment[/\\]locale$/,
+          localesRegex
+        ));
       }
-
-      this.import(
-        {
-          development: 'vendor/moment/moment.js',
-          production: 'vendor/moment/min/moment.min.js'
-        },
-        { prepend: true }
-      );
     }
   },
 
@@ -120,116 +115,62 @@ module.exports = {
     return config;
   },
 
-  treeForPublic() {
-    let hasFastBoot = this.project.addons.some(
-      addon => addon.name === 'ember-cli-fastboot'
-    );
-    let publicTree = this._super.treeForPublic.apply(this, arguments);
-    let options = this._options;
-    let trees = [];
+  // treeForPublic() {
+  //   let hasFastBoot = this.project.addons.some(
+  //     addon => addon.name === 'ember-cli-fastboot'
+  //   );
+  //   let publicTree = this._super.treeForPublic.apply(this, arguments);
+  //   let options = this._options;
+  //   let trees = [];
 
-    if (publicTree && hasFastBoot) {
-      trees.push(publicTree);
+  //   if (publicTree && hasFastBoot) {
+  //     trees.push(publicTree);
+  //   }
+
+  //   if (options.localeOutputPath) {
+  //     trees.push(
+  //       funnel(this.momentNode, {
+  //         srcDir: 'locale',
+  //         destDir: options.localeOutputPath
+  //       })
+  //     );
+  //   }
+
+  //   return mergeTrees(trees);
+  // },
+
+  _getMomentTZImportPath(includeTimezone) {
+    const paths = {
+      dev: null,
+      prod: null,
+    };
+    const currentSubset = '2012-2022'; // TODO: make this dynamic
+    switch (includeTimezone) {
+      case 'all':
+        paths.dev = 'moment-timezone/builds/moment-timezone-with-data';
+        paths.prod = 'moment-timezone/builds/moment-timezone-with-data.min';
+        break;
+      case '2010-2020':
+        this.ui.writeLine(
+          chalk.yellow(
+            '[ember-cli-moment-shim] "2010-2020" is deprecated, use "subset" within config/environment\nDiscussion: https://github.com/jasonmit/ember-cli-moment-shim/issues/121'
+          )
+        );
+      case 'subset':
+      case '2012-2022':
+      case '2010-2020':
+        paths.dev = 'moment-timezone/builds/moment-timezone-with-data-' + currentSubset + '';
+        paths.prod = 'moment-timezone/builds/moment-timezone-with-data-' + currentSubset + '.min';
+        break;
+      case 'none':
+        paths.dev = 'moment-timezone/moment-timezone';
+        paths.prod = 'moment-timezone/builds/moment-timezone.min';
+        break;
+      default:
+        throw new Error(
+          'ember-cli-moment-shim: Please specify the moment-timezone dataset to include as either "all", "subset", or "none".'
+        );
     }
-
-    if (options.localeOutputPath) {
-      trees.push(
-        funnel(this.momentNode, {
-          srcDir: 'locale',
-          destDir: options.localeOutputPath
-        })
-      );
-    }
-
-    return mergeTrees(trees);
+    return paths;
   },
-
-  treeForVendor(vendorTree) {
-    let trees = [];
-    let options = this._options;
-
-    if (vendorTree) {
-      trees.push(vendorTree);
-    }
-
-    trees.push(
-      funnel(this.momentNode, {
-        destDir: 'moment',
-        include: [new RegExp(/\.js$/)],
-        exclude: ['tests', 'ender', 'package'].map(
-          key => new RegExp(key + '.js$')
-        )
-      })
-    );
-
-    if (
-      Array.isArray(options.includeLocales) &&
-      options.includeLocales.length
-    ) {
-      let localeTree = funnel(this.momentNode, {
-        srcDir: 'locale',
-        destDir: 'moment/locales',
-        include: options.includeLocales.map(
-          locale => new RegExp(locale + '.js$')
-        )
-      });
-
-      trees.push(localeTree);
-    }
-
-    if (options.includeTimezone) {
-      let timezonePath;
-      let timezoneMinPath;
-
-      switch (options.includeTimezone) {
-        case 'all':
-          timezonePath = 'builds/moment-timezone-with-data.js';
-          timezoneMinPath = 'builds/moment-timezone-with-data.min.js';
-          break;
-        case '2010-2020':
-          this.ui.writeLine(
-            chalk.yellow(
-              '[ember-cli-moment-shim] "2010-2020" is deprecated, use "subset" within config/environment\nDiscussion: https://github.com/jasonmit/ember-cli-moment-shim/issues/121'
-            )
-          );
-        case 'subset':
-        case '2012-2022':
-        case '2010-2020':
-          timezonePath = 'builds/moment-timezone-with-data-*.js';
-          timezoneMinPath = 'builds/moment-timezone-with-data-*.min.js';
-          break;
-        case 'none':
-          timezonePath = 'moment-timezone.js';
-          timezoneMinPath = 'builds/moment-timezone.min.js';
-          break;
-        default:
-          throw new Error(
-            'ember-cli-moment-shim: Please specify the moment-timezone dataset to include as either "all", "subset", or "none".'
-          );
-      }
-
-      const timezoneNode = new UnwatchedDir(
-        path.dirname(require.resolve('moment-timezone'))
-      );
-
-      trees.push(
-        rename(
-          funnel(timezoneNode, { include: [timezonePath] }),
-          () => 'moment-timezone/tz.js'
-        )
-      );
-
-      trees.push(
-        rename(
-          funnel(timezoneNode, { include: [timezoneMinPath] }),
-          () => 'moment-timezone/tz.min.js'
-        )
-      );
-    }
-
-    return map(
-      mergeTrees(trees),
-      content => `if (typeof FastBoot === 'undefined') { ${content} }`
-    );
-  }
 };

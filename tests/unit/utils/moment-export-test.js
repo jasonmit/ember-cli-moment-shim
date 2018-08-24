@@ -2,18 +2,14 @@ import { A } from '@ember/array';
 import { sort } from '@ember/object/computed';
 import EmberObject from '@ember/object';
 import { test, module } from 'qunit';
-import moment from 'moment';
+import compare from 'ember-cli-moment-shim/utils/compare';
+// import moment from 'moment';
+import moment from 'moment-timezone';
 
 module('Unit | moment exports');
 
 test('moment exports', (assert) => {
   assert.ok(moment, 'moment exports an object');
-});
-
-test('moment compare fn exists', (assert) => {
-  const instance = moment();
-
-  assert.equal(typeof instance.compare, 'function');
 });
 
 test('moment() instanceof moment', (assert) => {
@@ -24,22 +20,17 @@ test('moment has `updateLocale`', (assert) => {
   assert.equal(typeof moment.updateLocale, 'function');
 });
 
-test('moment compare functions property', (assert) => {
-  const instanceA = moment(0);
-  const instanceB = moment(10000);
-  const instanceC = moment(10000);
-
-  assert.equal(instanceA.compare(instanceA, instanceB), -1);
-  assert.equal(instanceB.compare(instanceB, instanceC), 0);
-  assert.equal(instanceB.compare(instanceB, instanceA), 1);
-});
-
 test('moment tz fn exists', (assert) => {
   assert.equal(typeof moment.tz, 'function');
 });
 
 test('moment getLocale for `es`', (assert) => {
   assert.equal(typeof moment.localeData('es'), 'object');
+});
+
+test('moment only has selected locales`', (assert) => {
+  // Note: 'en' is always present in moment
+  assert.deepEqual(moment.locales(), ['en', 'es']);
 });
 
 test('moment.now is a class function', (assert) => {
@@ -61,7 +52,7 @@ test('ember computed sort can work with exported moment', (assert) => {
       this.datesSortParam = ['date:asc'];
     },
     sortedDateContainers: sort('dateContainers', function(a, b) {
-      return moment.compare(a.date, b.date);
+      return compare(a.date, b.date);
     })
   });
 

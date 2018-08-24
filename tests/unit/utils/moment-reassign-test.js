@@ -38,15 +38,3 @@ test('moment now reassigned is utilized in moment().format()', (assert) => {
 
   assert.equal(moment.utc().year(), 1970);
 });
-
-test('compare', (assert) => {
-  moment.now = function() {
-    return 1000;
-  };
-
-  const today = moment(10000);
-  const yesterday = moment().subtract(1, 'day');
-
-  assert.equal(today.compare(today, yesterday), 1);
-  assert.equal(today.compare(yesterday, today), -1);
-});

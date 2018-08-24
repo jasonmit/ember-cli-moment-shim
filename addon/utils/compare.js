@@ -1,6 +1,6 @@
-import moment from './lib';
+import moment from 'moment';
 
-function compare(a, b) {
+export default function compare(a, b) {
   if (moment.isMoment(a) && moment.isMoment(b)) {
     if (a.isBefore(b)) {
       return -1;
@@ -13,12 +13,3 @@ function compare(a, b) {
 
   throw new Error('Arguments provided to `compare` are not moment objects');
 }
-
-moment.prototype.compare = compare;
-moment.compare = compare;
-
-moment.prototype.clone = function clone() {
-  return moment(this);
-}
-
-export default moment;
