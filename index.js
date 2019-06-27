@@ -25,18 +25,6 @@ module.exports = {
     this.importDependencies();
   },
 
-  updateFastBootManifest(manifest) {
-    let target = 'fastboot-moment.js';
-
-    if (this._options.includeTimezone) {
-      target = 'fastboot-moment-timezone.js';
-    }
-
-    manifest.vendorFiles.push('moment/' + target);
-
-    return manifest;
-  },
-
   importDependencies() {
     let options = this._options;
 
@@ -121,16 +109,8 @@ module.exports = {
   },
 
   treeForPublic() {
-    let hasFastBoot = this.project.addons.some(
-      addon => addon.name === 'ember-cli-fastboot'
-    );
-    let publicTree = this._super.treeForPublic.apply(this, arguments);
     let options = this._options;
     let trees = [];
-
-    if (publicTree && hasFastBoot) {
-      trees.push(publicTree);
-    }
 
     if (options.localeOutputPath) {
       trees.push(
