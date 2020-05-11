@@ -150,12 +150,10 @@ module.exports = {
 
     if (options.includeTimezone) {
       let timezonePath;
-      let timezoneMinPath;
 
       switch (options.includeTimezone) {
         case 'all':
           timezonePath = 'builds/moment-timezone-with-data.js';
-          timezoneMinPath = 'builds/moment-timezone-with-data.min.js';
           break;
         case '2010-2020':
           this.ui.writeLine(
@@ -167,11 +165,9 @@ module.exports = {
         case '2012-2022':
         case '2010-2020':
           timezonePath = 'builds/moment-timezone-with-data-*.js';
-          timezoneMinPath = 'builds/moment-timezone-with-data-*.min.js';
           break;
         case 'none':
           timezonePath = 'moment-timezone.js';
-          timezoneMinPath = 'builds/moment-timezone.min.js';
           break;
         default:
           throw new Error(
@@ -187,13 +183,6 @@ module.exports = {
         rename(
           funnel(timezoneNode, { include: [timezonePath] }),
           () => 'moment-timezone/tz.js'
-        )
-      );
-
-      trees.push(
-        rename(
-          funnel(timezoneNode, { include: [timezoneMinPath] }),
-          () => 'moment-timezone/tz.min.js'
         )
       );
     }
