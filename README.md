@@ -22,7 +22,7 @@ import moment from 'moment';
 ## Enabling moment-timezone
 
 ```js
-// config.environment.js
+// config/environment.js
 module.exports = function(environment) {
   return {
     moment: {
@@ -41,7 +41,7 @@ module.exports = function(environment) {
 ### Cherry pick locales (optimal)
 
 ```js
-// config.environment.js
+// config/environment.js
 module.exports = function(environment) {
   return {
     moment: {
@@ -57,7 +57,7 @@ module.exports = function(environment) {
 ### Include all locales
 
 ```js
-// config.environment.js
+// config/environment.js
 module.exports = function(environment) {
   return {
     moment: {
@@ -83,7 +83,7 @@ export default Ember.Route.extend({
 ### Write all locales to a folder that is relative to `dist`
 
 ```js
-// config.environment.js
+// config/environment.js
 module.exports = function(environment) {
   return {
     moment: {
