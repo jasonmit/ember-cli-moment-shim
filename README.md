@@ -1,7 +1,8 @@
 # ember-cli-moment-shim
-[![Build Status](https://travis-ci.org/jasonmit/ember-cli-moment-shim.svg?branch=master)](https://travis-ci.org/jasonmit/ember-cli-moment-shim)
-[![npm Version][npm-badge]][npm]
-[![Ember Observer Score](http://emberobserver.com/badges/ember-cli-moment-shim.svg)](http://emberobserver.com/addons/ember-cli-moment-shim)
+
+As of [ember-moment v10](https://github.com/adopted-ember-addons/ember-moment/blob/master/CHANGELOG.md#1000) this library is no longer required to import moment, moment-timezone, or configure any of the build options. Instuctions for bundling [locale and timezone data](https://github.com/adopted-ember-addons/ember-moment#controlling-locale-and-timezone-data) can be found in the `ember-moment` readme.
+
+# For posterity the original documentation
 
 ember-cli ES6 module shim for [momentjs](https://momentjs.com) and [moment timezone](https://momentjs.com/timezone/) within your Ember applications.  It will also conditionally bundle in specific locale/timezone data for those concerned about payload size.
 
