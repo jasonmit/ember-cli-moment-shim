@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-moment-shim",
-  "version": "3.5.0",
+  "version": "3.5.0-time-zone-latest",
   "description": "Brings moment and moment-timezone into your Ember applications",
   "keywords": [
     "ember-addon",
@@ -8,18 +8,18 @@
     "momentjs"
   ],
   "bugs": {
-    "url": "https://github.com/jasonmit/ember-cli-moment-shim/issues"
+    "url": "https://github.com/visitdays/ember-cli-moment-shim/issues"
   },
   "license": "MIT",
   "author": "Jason Mitchell <jason.mitchell.w@gmail.com>",
-  "homepage": "https://github.com/jasonmit/ember-cli-moment-shim",
+  "homepage": "https://github.com/visitdays/ember-cli-moment-shim",
   "directories": {
     "doc": "doc",
     "test": "tests"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/jasonmit/ember-cli-moment-shim.git"
+    "url": "git://github.com/visitdays/ember-cli-moment-shim.git"
   },
   "scripts": {
     "build": "ember build",
@@ -36,8 +36,8 @@
     "ember-cli-import-polyfill": "^0.2.0",
     "exists-sync": "^0.0.4",
     "lodash.defaults": "^4.2.0",
-    "moment": "^2.18.1",
-    "moment-timezone": "^0.5.13"
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.37"
   },
   "devDependencies": {
     "broccoli-asset-rev": "^2.4.5",
@@ -47,7 +47,7 @@
     "ember-cli-htmlbars": "^1.1.1",
     "ember-cli-htmlbars-inline-precompile": "^0.4.3",
     "ember-cli-inject-live-reload": "^1.4.1",
-    "ember-cli-qunit": "^3.1.0",
+    "ember-cli-qunit": "^4.4.0",
     "ember-cli-shims": "^1.0.2",
     "ember-cli-sri": "^2.1.0",
     "ember-cli-uglify": "^1.2.0",
@@ -59,7 +59,7 @@
     "loader.js": "^4.2.3"
   },
   "engines": {
-    "node": ">= 4"
+    "node": ">= 12"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config",
