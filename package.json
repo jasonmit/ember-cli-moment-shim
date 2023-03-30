@@ -40,8 +40,8 @@
     "ember-cli-import-polyfill": "^0.2.0",
     "ember-get-config": "^1.0.0",
     "lodash.defaults": "^4.2.0",
-    "moment": "^2.19.3",
-    "moment-timezone": "^0.5.13"
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.42"
   },
   "devDependencies": {
     "@ember/optional-features": "^0.6.3",
