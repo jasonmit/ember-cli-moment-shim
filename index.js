@@ -37,7 +37,7 @@ module.exports = {
 
     if (typeof options.includeLocales === 'boolean' && options.includeLocales) {
       this.import(
-        'vendor/moment/moment-with-locales.js',
+        'vendor/moment/min/moment-with-locales.js',
         { prepend: true }
       );
     } else {
